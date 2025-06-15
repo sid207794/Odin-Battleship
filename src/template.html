@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>⛅ Weather App</title>
+  </head>
+  <body>
+    <div class="vantaWallpaper"></div>
+
+    <video autoplay muted loop playsinline id="bg-video">
+      Your browser doesnot support video tag.
+    </video>
+
+    <span class="bodyError"></span>
+
+    <div class="loadPage">
+      <div class="text">
+        <span class="pronounChange">OUR</span>
+        <span class="moto">WEATHER APP</span>
+      </div>
+
+      <div class="getLocation">
+        <button class="geolocation"><img src="./images/crosshairs-gps.svg" alt="gps"></button>
+        <div class="manualLocation">
+          <input type="text" id="locationBox" placeholder="Search places..." autocomplete="off" spellcheck="false">
+          <button class="searchCityButton"><img src="./images/chevron-right.svg" alt="search place"></button>
+        </div>
+      </div>
+      
+      <span class="error">ERROR</span>
+      <div class="loadingIcon"></div>
+    </div>
+
+    <header>
+      <div class="navLeftWrapper">
+        <nav class="navLeft">
+          <div class="locationDetail">
+            <div class="weatherIcon">⛅</div>
+            <div class="locationName">Rampur, India</div>
+            <div class="locationTemp">98 deg</div>
+          </div>
+        </nav>
+        
+        <div class="locationData">
+          <div class="coordinates">
+            <div class="latitude">
+              <p class="heading">LATITUDE</p>
+              <span class="latitudeData"></span>
+            </div>
+            <div class="longitude">
+              <p class="heading">LONGITUDE</p>
+              <span class="longitudeData"></span>
+            </div>
+          </div>
+          <div class="time"></div>
+          <div class="zone"></div>
+        </div>
+      </div>
+
+      <div class="navRightWrapper">
+        <nav class="navRight">
+          <div class="refresh"><img src="./images/refresh.svg" alt="refreshData"></div>
+          <input
+            type="text"
+            id="searchCity"
+            placeholder="Search places..."
+            autocomplete="off" 
+            spellcheck="false"
+          />
+          <button class="searchCityButton"><img src="./images/magnify.svg" alt="search"></button>
+        </nav>
+
+        <div class="prediction">
+          <span class="predictionTitle">PREDICTION</span>
+          <span class="description"></span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="weatherIndicator">
+        <div class="alertIcon"><img src="./images/alert-circle-outline.svg" alt="alertIcon"></div>
+        <div class="heatWave"><img src="./images/heat-wave.svg" alt="heatWave"></div>
+        <div class="rainStorm"><img src="./images/weather-lightning-rainy.svg" alt="rainStorm"></div>
+        <div class="hurricane"><img src="./images/weather-hurricane.svg" alt="hurricane"></div>
+        <div class="snowStorm"><img src="./images/snowflake-alert.svg" alt="snowStorm"></div>
+      </div>
+
+      <div class="locationConditions">
+        <div class="tempBig">
+          <div class="realTemp"></div>
+          <div class="feelsLike"></div>
+        </div>
+        <div class="moreConditions"></div>
+      </div>
+
+      <div class="visualDetailBox">
+        <div class="aqi">
+          <div class="title"><span class="titleText">Air Quality</span></div>
+          <div class="titleHr"><hr></div>
+          <div class="levelOfConcern">
+            <span class="levelInWord">Satisfactory</span>
+            <span class="levelInNumber">69</span>
+          </div>
+          <span class="levelDetail"><span></span></span>
+          <div class="qualityScale">
+            <div class="leftAqiHr"><hr></div>
+            <div class="levelIndicator"><div></div></div>
+            <div class="rightAqiHr"><hr></div>
+          </div>
+        </div>
+
+        <div class="sunStatusCover">
+          <div class="riseSet">
+            <div class="rise">
+              <div class="riseImage"><img src="./images/sunrise.svg" alt="sunrise"></div>
+              <span class="riseText"></span>
+            </div>
+            <div class="set">
+              <div class="setImage"><img src="./images/sunset.svg" alt="sunset"></div>
+              <span class="setText"></span>
+            </div>
+          </div>
+
+          <div class="travel">
+            <div class="lineLeft"><hr></div>
+            <div class="sun"><img src="./images/day.svg" alt="sun"></div>
+            <div class="lineRight"><hr></div>
+          </div>
+
+          <div class="riseSetTime">
+            <div class="riseTime"></div>
+            <div class="setTime"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hourlyDataToday">
+        <div class="hourlydataWrapper"></div>
+      </div>
+
+      <div class="upcomingForecast">
+        <div class="upcomingForecastWrapper"></div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="copyrightDetails">&copy; 2025 Siddharth Singh - 
+        <a href="https://github.com/sid207794/Odin-Weather-App" target="_blank">GitHub Repo</a> - 
+        Built with guidance from <a href="https://www.theodinproject.com" target="_blank">The Odin Project</a>
+      </div>
+    </footer>
+  </body>
+</html>
