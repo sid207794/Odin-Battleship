@@ -3,7 +3,7 @@ import { Ship } from '../logic.js';
 let newShip;
 
 beforeEach(() => {
-  newShip = new Ship(5);
+  newShip = new Ship('', 5);
 });
 
 test('Ship was hit 3 times but did not sink!', () => {
