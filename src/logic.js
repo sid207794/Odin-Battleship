@@ -28,6 +28,7 @@ export class Gameboard {
     this.shipLengths = [5, 4, 3, 3, 2];
     this.shipCoordinates = [];
     this.allShipData = [];
+    this.receivedAttacks = [];
     this.allHits = [];
     this.allMisses = [];
     this.sinkStatus = new Array(5).fill(false);
@@ -208,22 +209,82 @@ export class Gameboard {
       this.isSameCoord(missedCoord, attackCoord)
     );
 
-    if (hitReceived && !alreadyHit) {
+    if (alreadyHit || alreadyMissed) {
+      this.receivedAttacks.push({
+        coord: attackCoord,
+        hit: false,
+        miss: false,
+        alreadyTried: true,
+        shipSunk: false,
+        shipType: null,
+        shipIndex: null,
+      });
+
+      return {
+        hit: false,
+        miss: false,
+        alreadyTried: true,
+        shipSunk: false,
+        shipType: null,
+        shipIndex: null,
+      };
+    }
+
+    if (hitReceived) {
       const damagedShipIndex = this.shipCoordinates.findIndex((ship) =>
         ship.some((coord) => this.isSameCoord(coord, attackCoord))
       );
 
-      this.allShipData[damagedShipIndex].hit();
-      const hasSunk = this.allShipData[damagedShipIndex].isSunk();
+      const damagedShip = this.allShipData[damagedShipIndex];
+      damagedShip.hit();
+      const hasSunk = damagedShip.isSunk();
       if (hasSunk) this.sinkStatus[damagedShipIndex] = true;
 
       this.allHits.push(attackCoord);
-    } else if (!hitReceived && !alreadyMissed) {
+
+      const result = {
+        hit: true,
+        miss: false,
+        alreadyTried: false,
+        shipSunk: hasSunk,
+        shipType: damagedShip.type,
+        shipIndex: damagedShipIndex,
+      };
+
+      this.receivedAttacks.push({ coord: attackCoord, ...result });
+
+      return result;
+    } else {
       this.allMisses.push(attackCoord);
+
+      const result = {
+        hit: false,
+        miss: true,
+        alreadyTried: false,
+        shipSunk: false,
+        shipType: null,
+        shipIndex: null,
+      };
+
+      this.receivedAttacks.push({ coord: attackCoord, ...result });
+
+      return result;
     }
   }
 
   isSameCoord(coord1, coord2) {
     return coord1[0] === coord2[0] && coord1[1] === coord2[1];
+  }
+
+  isGameOver() {
+    return this.sinkStatus.every((ship) => ship);
+  }
+}
+
+export class Player {
+  constructor(isComputer = false) {
+    this.isComputer = isComputer;
+    this.isHuman = !isComputer;
+    this.gameboard = new Gameboard();
   }
 }

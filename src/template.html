@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BATTLESHIP</title>
+</head>
+<body>
+    <div id="loadingScreen"></div>
+    
+    <div id="gameScreen">
+        <header></header>
+
+        <div id="leftSidebar">
+            <div class="leftPanel">
+                <div class="shipStatus">
+                    <div class="carrierStatusWrap">
+                        <div class="coordStatus">
+                            <div class="carrier1"></div>
+                            <div class="carrier2"></div>
+                            <div class="carrier3"></div>
+                            <div class="carrier4"></div>
+                            <div class="carrier5"></div>
+                        </div>
+                        <div class="carrierStatus">
+                            <img src="./images/carrierLeft.png" alt="carrier left">
+                        </div>
+                    </div>
+                    <div class="battleshipStatusWrap">
+                        <div class="coordStatus">
+                            <div class="battleship1"></div>
+                            <div class="battleship2"></div>
+                            <div class="battleship3"></div>
+                            <div class="battleship4"></div>
+                        </div>
+                        <div class="carrierStatus">
+                            <img src="./images/battleshipLeft.png" alt="battleship left">
+                        </div>
+                    </div>
+                    <div class="cruiserStatusWrap">
+                        <div class="coordStatus">
+                            <div class="cruiser1"></div>
+                            <div class="cruiser2"></div>
+                            <div class="cruiser3"></div>
+                        </div>
+                        <div class="carrierStatus">
+                            <img src="./images/cruiserLeft.png" alt="cruiser left">
+                        </div>
+                    </div>
+                    <div class="submarineStatusWrap">
+                        <div class="coordStatus">
+                            <div class="submarine1"></div>
+                            <div class="submarine2"></div>
+                            <div class="submarine3"></div>
+                        </div>
+                        <div class="carrierStatus">
+                            <img src="./images/submarineLeft.png" alt="submarine left">
+                        </div>
+                    </div>
+                    <div class="destroyerStatusWrap">
+                        <div class="coordStatus">
+                            <div class="destroyer1"></div>
+                            <div class="destroyer2"></div>
+                        </div>
+                        <div class="carrierStatus">
+                            <img src="./images/destroyerLeft.png" alt="destroyer left">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actionStatus">
+                    <div class="indicatorBox">
+                        <div class="turnIndicator"></div>
+                    </div>
+                    <div class="infoBox">
+                        <div class="instruction"></div>
+                        <div class="status"></div>
+                    </div>
+                </div>
+
+                <div class="forfeit"></div>
+            </div>
+        </div>
+
+        <div id="rightSidebar">
+            <div class="rightPanel">
+                <div class="shipStatus">
+                    <div class="carrierStatusWrap">
+                        <div class="carrierStatus">
+                            <img src="./images/carrierRight.png" alt="carrier right">
+                        </div>
+                        <div class="coordStatus">
+                            <div class="carrier1"></div>
+                            <div class="carrier2"></div>
+                            <div class="carrier3"></div>
+                            <div class="carrier4"></div>
+                            <div class="carrier5"></div>
+                        </div>
+                    </div>
+                    <div class="battleshipStatusWrap">
+                        <div class="carrierStatus">
+                            <img src="./images/battleshipRight.png" alt="battleship right">
+                        </div>
+                        <div class="coordStatus">
+                            <div class="battleship1"></div>
+                            <div class="battleship2"></div>
+                            <div class="battleship3"></div>
+                            <div class="battleship4"></div>
+                        </div>
+                    </div>
+                    <div class="cruiserStatusWrap">
+                        <div class="carrierStatus">
+                            <img src="./images/cruiserRight.png" alt="cruiser right">
+                        </div>
+                        <div class="coordStatus">
+                            <div class="cruiser1"></div>
+                            <div class="cruiser2"></div>
+                            <div class="cruiser3"></div>
+                        </div>
+                    </div>
+                    <div class="submarineStatusWrap">
+                        <div class="carrierStatus">
+                            <img src="./images/submarineRight.png" alt="submarine right">
+                        </div>
+                        <div class="coordStatus">
+                            <div class="submarine1"></div>
+                            <div class="submarine2"></div>
+                            <div class="submarine3"></div>
+                        </div>
+                    </div>
+                    <div class="destroyerStatusWrap">
+                        <div class="carrierStatus">
+                            <img src="./images/destroyerRight.png" alt="destroyer right">
+                        </div>
+                        <div class="coordStatus">
+                            <div class="destroyer1"></div>
+                            <div class="destroyer2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actionStatus">
+                    <div class="indicatorBox">
+                        <div class="turnIndicator"></div>
+                    </div>
+                    <div class="infoBox">
+                        <div class="instruction"></div>
+                        <div class="status"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="gameplayZone">
+            <div class="videoResponse"></div>
+
+            <div class="playerData"></div>
+
+            <div class="playzone">
+                <div class="fleet">
+                    <div class="fleetGrid"></div>
+                </div>
+                <div class="attackArea">
+                    <div class="attackGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
