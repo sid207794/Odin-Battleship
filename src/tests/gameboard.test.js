@@ -120,3 +120,268 @@ describe('Ship coordinate placement', () => {
     }
   });
 });
+
+describe('Logging attack coordinates and their result.', () => {
+  let newBoard;
+
+  beforeEach(() => {
+    newBoard = new Gameboard();
+    newBoard.boardCoordinates();
+    newBoard.shipPlacement();
+  });
+
+  test('Attack was missed and no other ship was found in the vicinity', () => {
+    for (let j = 0; j < 5; j++) {
+      const ship = newBoard.shipCoordinates[j];
+      const coordinatesArr = newBoard.coordinates;
+
+      const isHorizontal = ship.every(
+        (coord, i, arr) =>
+          i === 0 ||
+          (coord[0].charCodeAt(0) === arr[i - 1][0].charCodeAt(0) + 1 &&
+            coord[1] === arr[i - 1][1])
+      );
+
+      const isVertical = ship.every(
+        (coord, i, arr) =>
+          i === 0 ||
+          (coord[0] === arr[i - 1][0] && coord[1] === arr[i - 1][1] + 1)
+      );
+
+      const isValidTopCoord = coordinatesArr.some(
+        (coords) => coords[0] === ship[0][0] && coords[1] === ship[0][1] - 1
+      );
+
+      const isValidLeftCoord = coordinatesArr.some(
+        (coords) =>
+          coords[0].charCodeAt(0) === ship[0][0].charCodeAt(0) - 1 &&
+          coords[1] === ship[0][1]
+      );
+
+      newBoard.receivedAttacks.length = 0;
+      newBoard.allHits.length = 0;
+      newBoard.allMisses.length = 0;
+      newBoard.sinkStatus = [false, false, false, false, false];
+
+      if (isHorizontal) {
+        if (isValidTopCoord) {
+          for (let k = 0; k < ship.length - 1; k++) {
+            newBoard.receiveAttack([ship[k][0], ship[k][1] - 1]);
+          }
+          expect(
+            newBoard.receiveAttack([
+              ship[ship.length - 1][0],
+              ship[ship.length - 1][1] - 1,
+            ])
+          ).toEqual({
+            hit: false,
+            miss: true,
+            alreadyTried: false,
+            shipSunk: false,
+            shipType: null,
+            shipIndex: null,
+          });
+          expect(newBoard.receivedAttacks.length).toBe(ship.length);
+          expect(newBoard.allHits.length).toBe(0);
+          expect(newBoard.allMisses.length).toBe(ship.length);
+          expect(newBoard.sinkStatus).toEqual([
+            false,
+            false,
+            false,
+            false,
+            false,
+          ]);
+        } else {
+          for (let k = 0; k < ship.length - 1; k++) {
+            newBoard.receiveAttack([ship[k][0], ship[k][1] + 1]);
+          }
+          expect(
+            newBoard.receiveAttack([
+              ship[ship.length - 1][0],
+              ship[ship.length - 1][1] + 1,
+            ])
+          ).toEqual({
+            hit: false,
+            miss: true,
+            alreadyTried: false,
+            shipSunk: false,
+            shipType: null,
+            shipIndex: null,
+          });
+          expect(newBoard.receivedAttacks.length).toBe(ship.length);
+          expect(newBoard.allHits.length).toBe(0);
+          expect(newBoard.allMisses.length).toBe(ship.length);
+          expect(newBoard.sinkStatus).toEqual([
+            false,
+            false,
+            false,
+            false,
+            false,
+          ]);
+        }
+      } else if (isVertical) {
+        if (isValidLeftCoord) {
+          newBoard.receiveAttack([
+            ship[0][0].charCodeAt(0) - 1,
+            ship[0][1] + 1,
+          ]);
+          newBoard.receiveAttack([
+            ship[0][0].charCodeAt(0) - 1,
+            ship[0][1] - 1,
+          ]);
+          expect(
+            newBoard.receiveAttack([ship[0][0].charCodeAt(0) - 1, ship[0][1]])
+          ).toEqual({
+            hit: false,
+            miss: true,
+            alreadyTried: false,
+            shipSunk: false,
+            shipType: null,
+            shipIndex: null,
+          });
+          expect(newBoard.receivedAttacks.length).toBe(3);
+          expect(newBoard.allHits.length).toBe(0);
+          expect(newBoard.allMisses.length).toBe(3);
+          expect(newBoard.sinkStatus).toEqual([
+            false,
+            false,
+            false,
+            false,
+            false,
+          ]);
+        } else {
+          newBoard.receiveAttack([
+            ship[ship.length - 1][0].charCodeAt(0) + 1,
+            ship[ship.length - 1][1] + 1,
+          ]);
+          newBoard.receiveAttack([
+            ship[ship.length - 1][0].charCodeAt(0) + 1,
+            ship[ship.length - 1][1] - 1,
+          ]);
+          expect(
+            newBoard.receiveAttack([
+              ship[ship.length - 1][0].charCodeAt(0) + 1,
+              ship[ship.length - 1][1],
+            ])
+          ).toEqual({
+            hit: false,
+            miss: true,
+            alreadyTried: false,
+            shipSunk: false,
+            shipType: null,
+            shipIndex: null,
+          });
+          expect(newBoard.receivedAttacks.length).toBe(3);
+          expect(newBoard.allHits.length).toBe(0);
+          expect(newBoard.allMisses.length).toBe(3);
+          expect(newBoard.sinkStatus).toEqual([
+            false,
+            false,
+            false,
+            false,
+            false,
+          ]);
+        }
+      }
+    }
+  });
+
+  test('Attack was aborted as the coordinate for each ship is already hit.', () => {
+    for (let i = 0; i < 5; i++) {
+      const ship = newBoard.shipCoordinates[i];
+
+      newBoard.receivedAttacks.length = 0;
+      newBoard.allHits.length = 0;
+      newBoard.allMisses.length = 0;
+      newBoard.sinkStatus = [false, false, false, false, false];
+
+      newBoard.receiveAttack(ship[0]);
+      expect(newBoard.receiveAttack(ship[0])).toEqual({
+        hit: false,
+        miss: false,
+        alreadyTried: true,
+        shipSunk: false,
+        shipType: null,
+        shipIndex: null,
+      });
+
+      expect(newBoard.receivedAttacks.length).toBe(2);
+      expect(newBoard.allHits.length).toBe(1);
+      expect(newBoard.allMisses.length).toBe(0);
+      expect(newBoard.sinkStatus).toEqual([false, false, false, false, false]);
+    }
+  });
+
+  test('Attack was aborted as the coordinate in the ocean is already missed.', () => {
+    const shipArr = newBoard.shipCoordinates.flat();
+    const oceanIndex = newBoard.coordinates.findIndex(
+      (coord) =>
+        !shipArr.some(
+          (shipCoord) => coord[0] === shipCoord[0] && coord[1] === shipCoord[1]
+        )
+    );
+
+    newBoard.receivedAttacks.length = 0;
+    newBoard.allHits.length = 0;
+    newBoard.allMisses.length = 0;
+    newBoard.sinkStatus = [false, false, false, false, false];
+
+    newBoard.receiveAttack(newBoard.coordinates[oceanIndex]);
+    expect(newBoard.receiveAttack(newBoard.coordinates[oceanIndex])).toEqual({
+      hit: false,
+      miss: false,
+      alreadyTried: true,
+      shipSunk: false,
+      shipType: null,
+      shipIndex: null,
+    });
+
+    expect(newBoard.receivedAttacks.length).toBe(2);
+    expect(newBoard.allHits.length).toBe(0);
+    expect(newBoard.allMisses.length).toBe(1);
+    expect(newBoard.sinkStatus).toEqual([false, false, false, false, false]);
+  });
+
+  test('All ships sink once all their coordinates are hit.', () => {
+    for (let i = 0; i < 5; i++) {
+      const ship = newBoard.shipCoordinates[i];
+
+      newBoard.receivedAttacks.length = 0;
+      newBoard.allHits.length = 0;
+      newBoard.allMisses.length = 0;
+      newBoard.sinkStatus = [false, false, false, false, false];
+
+      for (let j = 0; j < ship.length - 1; j++) {
+        newBoard.receiveAttack(ship[j]);
+      }
+
+      expect(newBoard.receiveAttack(ship[ship.length - 1])).toEqual({
+        hit: true,
+        miss: false,
+        alreadyTried: false,
+        shipSunk: true,
+        shipType: newBoard.allShipData[i].type,
+        shipIndex: i,
+      });
+
+      expect(newBoard.receivedAttacks.length).toBe(ship.length);
+      expect(newBoard.allHits.length).toBe(ship.length);
+      expect(newBoard.allMisses.length).toBe(0);
+      expect(newBoard.sinkStatus[i]).toBe(true);
+      expect(newBoard.isGameOver()).toBeFalsy();
+    }
+  });
+
+  test('Game is over once all ships sink.', () => {
+    for (let i = 0; i < 5; i++) {
+      const ship = newBoard.shipCoordinates[i];
+
+      for (let j = 0; j < ship.length; j++) {
+        newBoard.receiveAttack(ship[j]);
+      }
+    }
+
+    expect(newBoard.sinkStatus).toEqual([true, true, true, true, true]);
+    expect(newBoard.isGameOver()).toBeTruthy();
+  });
+});
