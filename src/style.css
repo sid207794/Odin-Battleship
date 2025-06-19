@@ -2,7 +2,8 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background-color: black;
+  background-image: url('./images/blackGrid.jpg');
+  background-size: cover;
 }
 
 #gameScreen {
@@ -65,26 +66,60 @@ body {
   align-items: center;
   height: 9vh;
   width: 10vw;
-  background-color: #646a6d;
+  background-image: url('./images/pipboyGreen.jpg');
+  background-size: cover;
   border-radius: calc(10 * 100vmin / 730);
   box-sizing: border-box;
   box-shadow:
-    inset 2px 2px 15px black,
-    inset -2px -2px 15px black;
+    inset 2px 2px 10px black,
+    inset -2px -2px 10px black;
   gap: 1vw;
 }
 
 .coordStatus {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 0.5vw;
+  width: calc(100 * 100vw / 1536);
 }
 
 .coordStatus > div {
-  height: 1.5vh;
+  height: 1vh;
   width: 1.5vh;
   background-color: white;
-  box-shadow: inset 0 0 2px black;
+  box-shadow:
+    inset 0 1px 0 black,
+    inset 0 -1px 0 black;
+}
+
+.coordStatus > div:first-child {
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.coordStatus > div:last-child {
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.carrierStatusWrap .coordStatus > div {
+  width: calc(20 * 100vw / 1536);
+}
+
+.battleshipStatusWrap .coordStatus > div {
+  width: calc(25 * 100vw / 1536);
+}
+
+.cruiserStatusWrap .coordStatus > div {
+  width: calc((100 / 3) * 100vw / 1536);
+}
+
+.submarineStatusWrap .coordStatus > div {
+  width: calc((100 / 3) * 100vw / 1536);
+}
+
+.destroyerStatusWrap .coordStatus > div {
+  width: calc(50 * 100vw / 1536);
 }
 
 .leftPanel .carrierStatus img,
@@ -95,7 +130,8 @@ body {
   height: 6vh;
   width: 7vw;
   border-radius: calc(10 * 100vmin / 730);
-  filter: invert(10%);
+  filter: brightness(0) saturate(100%) invert(83%) sepia(100%) hue-rotate(70deg)
+    saturate(2900%) brightness(125%);
 }
 
 .leftPanel .actionStatus {
@@ -166,7 +202,7 @@ body {
   height: 6vh;
   width: 7vw;
   border-radius: calc(10 * 100vmin / 730);
-  filter: invert(70%) drop-shadow(0 0 3px black);
+  filter: invert(80%);
 }
 
 #gameScreen #gameplayZone {
@@ -232,9 +268,18 @@ body {
 
 .sunkRight {
   border-color: red !important;
+  background-color: red !important;
 }
 
 .sunkRightImg {
+  filter: invert(10%) !important;
+}
+
+.sunkLeft {
+  background-image: url('./images/pipboyRed.jpg') !important;
+}
+
+.sunkLeftImg {
   filter: invert(20%) sepia(100%) saturate(5000%) hue-rotate(0deg)
     brightness(150%) contrast(100%) drop-shadow(0 0 3px black) !important;
 }
