@@ -20,32 +20,43 @@ const createGrid = (function () {
 })();
 
 const playerVsComp = (function () {
-  const shipPlacementPlayer = (function () {
-    const player = new Player(false);
-    player.gameboard.boardCoordinates();
-    player.gameboard.shipPlacement();
+  const player = new Player(false);
+  player.gameboard.boardCoordinates();
+  player.gameboard.shipPlacement();
+  const shipCoordinates = player.gameboard.shipCoordinates.flat();
+  const fleetCells = document.querySelectorAll('.fleetCell');
 
-    const shipCoordinates = player.gameboard.shipCoordinates.flat();
-    const fleetCells = document.querySelectorAll('.fleetCell');
+  const computer = new Player(true);
+  computer.gameboard.boardCoordinates();
+  computer.gameboard.shipPlacement();
+  const attackCells = document.querySelectorAll('.attackCell');
 
-    for (let coord of shipCoordinates) {
-      fleetCells.forEach((child) => {
-        if (child.classList[0] === `${coord[0]}${coord[1]}`) {
-          child.style.backgroundColor = 'white';
-        }
-      });
+  (function showPlayerFleet() {
+    for (let child of fleetCells) {
+      const cellCoord = [
+        child.classList[0].charAt(0),
+        Number(child.classList[0].slice(1)),
+      ];
+
+      child.style.pointerEvents = 'none';
+
+      const isShip = shipCoordinates.some(
+        (coord) => coord[0] === cellCoord[0] && coord[1] === cellCoord[1]
+      );
+      if (isShip) {
+        child.style.backgroundColor = 'white';
+      }
     }
   })();
 
-  const shipPlacementComp = (function () {
-    const computer = new Player(true);
-    computer.gameboard.boardCoordinates();
-    computer.gameboard.shipPlacement();
-
-    const attackCells = document.querySelectorAll('.attackCell');
+  (function enablePlayerAttack() {
     const shipStatusRight = document.querySelectorAll(
       '.rightPanel .shipStatus .shipWrap'
     );
+
+    const rightShipHits = Array.from(
+      document.querySelectorAll('.rightPanel .shipStatus .shipWrap')
+    ).map((wrap) => Array.from(wrap.querySelectorAll('.coordStatus div')));
 
     for (let child of attackCells) {
       const cellCoord = [
@@ -57,42 +68,110 @@ const playerVsComp = (function () {
         const result = computer.gameboard.receiveAttack(cellCoord);
 
         if (result.alreadyTried) {
-          child.style.pointerEvents = 'none';
           return;
         }
 
-        if (result.hit) {
-          child.style.backgroundColor = 'red';
-          child.style.pointerEvents = 'none';
-
-          const coordStatusDiv = document.querySelectorAll(
-            `.rightPanel .${shipStatusRight[result.shipIndex].classList[0]} .coordStatus div`
-          );
-
-          coordStatusDiv[
-            computer.gameboard.allShipData[result.shipIndex].hits - 1
-          ].style.backgroundColor = 'red';
-        } else {
-          child.style.backgroundColor = 'aqua';
-          child.style.pointerEvents = 'none';
-        }
-
-        if (result.shipSunk) {
-          const carrierStatus = document.querySelector(
-            `.rightPanel .${shipStatusRight[result.shipIndex].classList[0]} .carrierStatus`
-          );
-          const carrierStatusImg = document.querySelector(
-            `.rightPanel .${shipStatusRight[result.shipIndex].classList[0]} .carrierStatus img`
-          );
-
-          carrierStatus.classList.add('sunkRight');
-          carrierStatusImg.classList.add('sunkRightImg');
-        }
+        updateHitStatus({
+          isPlayer: false,
+          panel: 'rightPanel',
+          cell: child,
+          result: result,
+          shipStatus: shipStatusRight,
+          shipHits: rightShipHits,
+          turn: computer,
+        });
 
         if (computer.gameboard.isGameOver()) {
           console.log('GAME OVER!');
+          lockAttackGrid();
+        } else {
+          setTimeout(() => {
+            dumbAttackOnPlayer();
+          }, 500);
+          lockAttackGrid();
         }
       });
     }
   })();
+
+  const dumbAttackOnPlayer = function () {
+    const xRandom = Math.floor(Math.random() * 10);
+    const yRandom = Math.floor(Math.random() * 10) + 1;
+    const compCellCoord = [String.fromCharCode(65 + xRandom), yRandom];
+    const child = document.querySelector(
+      `.fleetGrid .${compCellCoord[0]}${compCellCoord[1]}`
+    );
+    const compAttackResult = player.gameboard.receiveAttack(compCellCoord);
+    const shipStatusLeft = document.querySelectorAll(
+      '.leftPanel .shipStatus .shipWrap'
+    );
+
+    const leftShipHits = Array.from(
+      document.querySelectorAll('.leftPanel .shipStatus .shipWrap')
+    ).map((wrap) => Array.from(wrap.querySelectorAll('.coordStatus div')));
+
+    if (compAttackResult.alreadyTried) {
+      dumbAttackOnPlayer();
+      return;
+    }
+
+    updateHitStatus({
+      isPlayer: true,
+      panel: 'leftPanel',
+      cell: child,
+      result: compAttackResult,
+      shipStatus: shipStatusLeft,
+      shipHits: leftShipHits,
+      turn: player,
+    });
+
+    if (player.gameboard.isGameOver()) {
+      console.log('GAME OVER!');
+      lockAttackGrid();
+    } else {
+      unlockAttackGrid();
+    }
+  };
+
+  function updateHitStatus({
+    isPlayer,
+    panel,
+    cell,
+    result,
+    shipStatus,
+    shipHits,
+    turn,
+  }) {
+    if (result.hit) {
+      cell.style.backgroundColor = 'red';
+      const hitCount = turn.gameboard.allShipData[result.shipIndex].hits;
+      shipHits[result.shipIndex][hitCount - 1].style.backgroundColor = 'red';
+    } else {
+      cell.style.backgroundColor = 'aqua';
+    }
+
+    if (result.shipSunk) {
+      const carrierStatus = document.querySelector(
+        `.${panel} .${shipStatus[result.shipIndex].classList[0]} .carrierStatus`
+      );
+      const carrierStatusImg = document.querySelector(
+        `.${panel} .${shipStatus[result.shipIndex].classList[0]} .carrierStatus img`
+      );
+
+      carrierStatus.classList.add(isPlayer ? 'sunkLeft' : 'sunkRight');
+      carrierStatusImg.classList.add(isPlayer ? 'sunkLeftImg' : 'sunkRightImg');
+    }
+
+    cell.style.pointerEvents = 'none';
+    cell.style.cursor = 'default';
+    cell.style.filter = 'brightness(100%)';
+  }
+
+  function lockAttackGrid() {
+    attackCells.forEach((child) => (child.style.pointerEvents = 'none'));
+  }
+
+  function unlockAttackGrid() {
+    attackCells.forEach((child) => (child.style.pointerEvents = 'auto'));
+  }
 })();
