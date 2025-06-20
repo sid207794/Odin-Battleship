@@ -216,13 +216,13 @@ body {
 #gameplayZone .videoResponse {
   display: flex;
   height: 20%;
-  background-color: red;
+  background-color: transparent;
 }
 
 #gameplayZone .playerData {
   display: flex;
   height: 10%;
-  background-color: turquoise;
+  background-color: transparent;
 }
 
 #gameplayZone .playzone {
@@ -246,7 +246,7 @@ body {
   grid-template: repeat(10, 1fr) / repeat(10, 1fr);
   height: 25vw;
   width: 25vw;
-  border: solid calc(1 * 100vmin / 730) white;
+  border: none;
 }
 
 .fleetCell,
