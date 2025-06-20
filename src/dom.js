@@ -20,6 +20,8 @@ const createGrid = (function () {
 })();
 
 const playerVsComp = (function () {
+  let bannedCoords = [];
+
   const player = new Player(false);
   player.gameboard.boardCoordinates();
   player.gameboard.shipPlacement();
@@ -30,6 +32,20 @@ const playerVsComp = (function () {
   computer.gameboard.boardCoordinates();
   computer.gameboard.shipPlacement();
   const attackCells = document.querySelectorAll('.attackCell');
+
+  let aiMemory = {
+    chasing: false,
+    firstHit: null,
+    origin: null,
+    directionIndex: 0,
+    directions: [
+      [0, 1],
+      [0, -1],
+      [1, 0],
+      [-1, 0],
+    ],
+    lastTriedCoord: null,
+  };
 
   (function showPlayerFleet() {
     for (let child of fleetCells) {
@@ -72,7 +88,7 @@ const playerVsComp = (function () {
         }
 
         updateHitStatus({
-          isPlayer: false,
+          isPlayerShip: false,
           panel: 'rightPanel',
           cell: child,
           result: result,
@@ -84,24 +100,81 @@ const playerVsComp = (function () {
         if (computer.gameboard.isGameOver()) {
           console.log('GAME OVER!');
           lockAttackGrid();
-        } else {
-          setTimeout(() => {
-            dumbAttackOnPlayer();
-          }, 500);
+        } else if (result.hit) {
+          return;
+        } else if (aiMemory.chasing) {
           lockAttackGrid();
+          setTimeout(() => {
+            findPlayerShipOnHit();
+          }, 500);
+        } else {
+          lockAttackGrid();
+          setTimeout(() => {
+            enableCompAttack();
+          }, 500);
         }
       });
     }
   })();
 
-  const dumbAttackOnPlayer = function () {
-    const xRandom = Math.floor(Math.random() * 10);
-    const yRandom = Math.floor(Math.random() * 10) + 1;
-    const compCellCoord = [String.fromCharCode(65 + xRandom), yRandom];
-    const child = document.querySelector(
-      `.fleetGrid .${compCellCoord[0]}${compCellCoord[1]}`
+  function getNewRandomCoord() {
+    let coord;
+
+    do {
+      const xRandom = Math.floor(Math.random() * 10);
+      const yRandom = Math.floor(Math.random() * 10) + 1;
+      coord = [String.fromCharCode(65 + xRandom), yRandom];
+    } while (
+      player.gameboard.isAlreadyTried(coord) ||
+      bannedCoords.includes(coord.join(''))
     );
-    const compAttackResult = player.gameboard.receiveAttack(compCellCoord);
+
+    return coord;
+  }
+
+  const enableCompAttack = function () {
+    let compCellCoord = getNewRandomCoord();
+    const attackItems = compAttackItems(compCellCoord);
+
+    updateHitStatus({
+      isPlayerShip: true,
+      panel: 'leftPanel',
+      cell: attackItems.child,
+      result: attackItems.result,
+      shipStatus: attackItems.shipStatusLeft,
+      shipHits: attackItems.leftShipHits,
+      turn: player,
+    });
+
+    if (player.gameboard.isGameOver()) {
+      console.log('GAME OVER!');
+      lockAttackGrid();
+    } else if (attackItems.result.hit && !attackItems.result.shipSunk) {
+      lockAttackGrid();
+      aiMemory = {
+        chasing: true,
+        firstHit: compCellCoord,
+        origin: compCellCoord,
+        directionIndex: 0,
+        directions: [
+          [0, 1],
+          [0, -1],
+          [1, 0],
+          [-1, 0],
+        ],
+        lastTriedCoord: compCellCoord,
+      };
+      setTimeout(() => {
+        findPlayerShipOnHit();
+      }, 500);
+    } else {
+      unlockAttackGrid();
+    }
+  };
+
+  function compAttackItems(coord) {
+    const child = document.querySelector(`.fleetGrid .${coord[0]}${coord[1]}`);
+    const result = player.gameboard.receiveAttack(coord);
     const shipStatusLeft = document.querySelectorAll(
       '.leftPanel .shipStatus .shipWrap'
     );
@@ -110,31 +183,16 @@ const playerVsComp = (function () {
       document.querySelectorAll('.leftPanel .shipStatus .shipWrap')
     ).map((wrap) => Array.from(wrap.querySelectorAll('.coordStatus div')));
 
-    if (compAttackResult.alreadyTried) {
-      dumbAttackOnPlayer();
-      return;
-    }
-
-    updateHitStatus({
-      isPlayer: true,
-      panel: 'leftPanel',
-      cell: child,
-      result: compAttackResult,
-      shipStatus: shipStatusLeft,
-      shipHits: leftShipHits,
-      turn: player,
-    });
-
-    if (player.gameboard.isGameOver()) {
-      console.log('GAME OVER!');
-      lockAttackGrid();
-    } else {
-      unlockAttackGrid();
-    }
-  };
+    return {
+      child: child,
+      result: result,
+      shipStatusLeft: shipStatusLeft,
+      leftShipHits: leftShipHits,
+    };
+  }
 
   function updateHitStatus({
-    isPlayer,
+    isPlayerShip,
     panel,
     cell,
     result,
@@ -142,6 +200,8 @@ const playerVsComp = (function () {
     shipHits,
     turn,
   }) {
+    if (result.alreadyTried) return;
+
     if (result.hit) {
       cell.style.backgroundColor = 'red';
       const hitCount = turn.gameboard.allShipData[result.shipIndex].hits;
@@ -158,8 +218,10 @@ const playerVsComp = (function () {
         `.${panel} .${shipStatus[result.shipIndex].classList[0]} .carrierStatus img`
       );
 
-      carrierStatus.classList.add(isPlayer ? 'sunkLeft' : 'sunkRight');
-      carrierStatusImg.classList.add(isPlayer ? 'sunkLeftImg' : 'sunkRightImg');
+      carrierStatus.classList.add(isPlayerShip ? 'sunkLeft' : 'sunkRight');
+      carrierStatusImg.classList.add(
+        isPlayerShip ? 'sunkLeftImg' : 'sunkRightImg'
+      );
     }
 
     cell.style.pointerEvents = 'none';
@@ -173,5 +235,160 @@ const playerVsComp = (function () {
 
   function unlockAttackGrid() {
     attackCells.forEach((child) => (child.style.pointerEvents = 'auto'));
+  }
+
+  function findPlayerShipOnHit() {
+    if (!aiMemory.chasing) return;
+
+    let origin = aiMemory.origin;
+    let direction = aiMemory.directions[aiMemory.directionIndex];
+
+    let nextCoord = [
+      String.fromCharCode(origin[0].charCodeAt(0) + direction[0]),
+      origin[1] + direction[1],
+    ];
+
+    if (
+      !isValidCoord(nextCoord) ||
+      player.gameboard.isAlreadyTried(nextCoord) ||
+      bannedCoords.includes(nextCoord.join(''))
+    ) {
+      aiMemory.directionIndex++;
+      if (aiMemory.directionIndex >= aiMemory.directions.length) {
+        aiMemory.chasing = false;
+        unlockAttackGrid();
+        return;
+      }
+
+      aiMemory.origin = aiMemory.firstHit;
+      setTimeout(() => findPlayerShipOnHit(), 500);
+      return;
+    }
+
+    const attackItems = compAttackItems(nextCoord);
+
+    updateHitStatus({
+      isPlayerShip: true,
+      panel: 'leftPanel',
+      cell: attackItems.child,
+      result: attackItems.result,
+      shipStatus: attackItems.shipStatusLeft,
+      shipHits: attackItems.leftShipHits,
+      turn: player,
+    });
+
+    aiMemory.lastTriedCoord = nextCoord;
+
+    if (attackItems.result.hit && !attackItems.result.shipSunk) {
+      aiMemory.origin = nextCoord;
+      setTimeout(() => findPlayerShipOnHit(), 500);
+    } else if (player.gameboard.isGameOver()) {
+      lockAttackGrid();
+      console.log('GAME OVER! AI wins');
+    } else if (attackItems.result.shipSunk) {
+      markSurroundingAsBanned(
+        player.gameboard.shipCoordinates[attackItems.result.shipIndex]
+      );
+      aiMemory.chasing = false;
+      setTimeout(() => {
+        fireBonusRandomShot();
+      }, 500);
+    } else {
+      aiMemory.directionIndex++;
+      aiMemory.origin = aiMemory.firstHit;
+      unlockAttackGrid();
+    }
+  }
+
+  function isValidCoord(coord) {
+    return (
+      coord &&
+      coord[0].charCodeAt(0) >= 65 &&
+      coord[0].charCodeAt(0) <= 74 &&
+      coord[1] >= 1 &&
+      coord[1] <= 10
+    );
+  }
+
+  function fireBonusRandomShot() {
+    let coord = getNewRandomCoord();
+    const attackItems = compAttackItems(coord);
+
+    updateHitStatus({
+      isPlayerShip: true,
+      panel: 'leftPanel',
+      cell: attackItems.child,
+      result: attackItems.result,
+      shipStatus: attackItems.shipStatusLeft,
+      shipHits: attackItems.leftShipHits,
+      turn: player,
+    });
+
+    if (player.gameboard.isGameOver()) {
+      lockAttackGrid();
+      console.log('GAME OVER! AI wins');
+      return;
+    }
+
+    if (attackItems.result.hit && !attackItems.result.shipSunk) {
+      aiMemory = {
+        chasing: true,
+        firstHit: coord,
+        origin: coord,
+        directionIndex: 0,
+        directions: [
+          [0, 1],
+          [0, -1],
+          [1, 0],
+          [-1, 0],
+        ],
+        lastTriedCoord: coord,
+      };
+      setTimeout(() => {
+        findPlayerShipOnHit();
+      }, 500);
+    } else if (attackItems.result.hit && attackItems.result.shipSunk) {
+      markSurroundingAsBanned(
+        player.gameboard.shipCoordinates[attackItems.result.shipIndex]
+      );
+      setTimeout(() => {
+        fireBonusRandomShot();
+      }, 500);
+    } else {
+      setTimeout(() => {
+        unlockAttackGrid();
+      }, 500);
+    }
+  }
+
+  function markSurroundingAsBanned(coords) {
+    const adjacents = [
+      [0, 1],
+      [1, 0],
+      [0, -1],
+      [-1, 0],
+      [1, 1],
+      [1, -1],
+      [-1, -1],
+      [-1, 1],
+    ];
+
+    for (let coord of coords) {
+      let [row, col] = coord;
+
+      for (let [x, y] of adjacents) {
+        const newRow = String.fromCharCode(row.charCodeAt(0) + x);
+        const newCol = col + y;
+        const newCoord = [newRow, newCol];
+
+        if (
+          isValidCoord(newCoord) &&
+          !player.gameboard.isAlreadyTried(newCoord) &&
+          !bannedCoords.includes(newCoord.join(''))
+        ) {
+          bannedCoords.push(newCoord.join(''));
+        }
+      }
+    }
   }
 })();
