@@ -6,6 +6,8 @@ describe('Board Coordinates', () => {
   beforeEach(() => {
     newBoard = new Gameboard();
     newBoard.boardCoordinates();
+    newBoard.boardRowCoords();
+    newBoard.boardColCoords();
   });
 
   test('First co-ordinate is correct.', () => {
@@ -54,6 +56,22 @@ describe('Board Coordinates', () => {
 
   test('There are 100 coordinates generated.', () => {
     expect(newBoard.coordinates.length).toBe(100);
+  });
+
+  test('Fifth item of First row-co-ordinate is correct.', () => {
+    expect(newBoard.rowCoordinates[0][4]).toEqual(['E', 1]);
+  });
+
+  test('Fifth item of Fifth row-co-ordinate is correct.', () => {
+    expect(newBoard.rowCoordinates[4][4]).toEqual(['E', 5]);
+  });
+
+  test('Fifth item of First col-co-ordinate is correct.', () => {
+    expect(newBoard.colCoordinates[0][4]).toEqual(['A', 5]);
+  });
+
+  test('Fifth item of Fifth col-co-ordinate is correct.', () => {
+    expect(newBoard.colCoordinates[4][4]).toEqual(['E', 5]);
   });
 });
 
@@ -370,6 +388,24 @@ describe('Logging attack coordinates and their result.', () => {
       expect(newBoard.sinkStatus[i]).toBe(true);
       expect(newBoard.isGameOver()).toBeFalsy();
     }
+  });
+
+  test('Indicates if target cell has already been tried', () => {
+    newBoard.receiveAttack(['B', 5]);
+    expect(newBoard.isAlreadyTried(['B', 5])).toBeTruthy();
+    expect(newBoard.isAlreadyTried(['B', 6])).toBeFalsy();
+  });
+
+  test('Return the length of smallest unsunk ship', () => {
+    const ship = newBoard.shipCoordinates;
+    ship[4].forEach((coord) => newBoard.receiveAttack(coord));
+    expect(newBoard.smallestUnsunkShip()).toBe(3);
+    ship[3].forEach((coord) => newBoard.receiveAttack(coord));
+    ship[2].forEach((coord) => newBoard.receiveAttack(coord));
+    expect(newBoard.smallestUnsunkShip()).toBe(4);
+    ship[1].forEach((coord) => newBoard.receiveAttack(coord));
+    ship[0].forEach((coord) => newBoard.receiveAttack(coord));
+    expect(newBoard.smallestUnsunkShip()).toBe(null);
   });
 
   test('Game is over once all ships sink.', () => {
