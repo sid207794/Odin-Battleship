@@ -18,6 +18,8 @@ export class Ship {
 export class Gameboard {
   constructor() {
     this.coordinates = [];
+    this.rowCoordinates = [];
+    this.colCoordinates = [];
     this.shipTypes = [
       'CARRIER',
       'BATTLESHIP',
@@ -39,6 +41,28 @@ export class Gameboard {
       for (let j = 1; j <= 10; j++) {
         this.coordinates.push([String.fromCharCode(i), j]);
       }
+    }
+  }
+
+  boardRowCoords() {
+    this.rowCoordinates = [];
+    for (let i = 1; i <= 10; i++) {
+      let currentRow = [];
+      for (let j = 65; j <= 74; j++) {
+        currentRow.push([String.fromCharCode(j), i]);
+      }
+      this.rowCoordinates.push(currentRow);
+    }
+  }
+
+  boardColCoords() {
+    this.colCoordinates = [];
+    for (let i = 65; i <= 74; i++) {
+      let currentCol = [];
+      for (let j = 1; j <= 10; j++) {
+        currentCol.push([String.fromCharCode(i), j]);
+      }
+      this.colCoordinates.push(currentCol);
     }
   }
 
@@ -278,7 +302,75 @@ export class Gameboard {
     );
   }
 
+  smallestUnsunkShip() {
+    const lengthOfUnsunk = [];
+    this.sinkStatus.forEach((status, index) => {
+      if (!status) {
+        lengthOfUnsunk.push(this.shipLengths[index]);
+      }
+    });
+
+    return lengthOfUnsunk.length ? Math.min(...lengthOfUnsunk) : null;
+  }
+
+  getValidFireZones(coord) {
+    const smallestShipLength = this.smallestUnsunkShip();
+    if (!smallestShipLength) return [];
+
+    const currentCoordRow = this.rowCoordinates.find((row) =>
+      row.some((rowCoord) => this.isSameCoord(rowCoord, coord))
+    );
+    const currentCoordCol = this.colCoordinates.find((col) =>
+      col.some((colCoord) => this.isSameCoord(colCoord, coord))
+    );
+
+    const validRowSegments = currentCoordRow
+      ? this.getValidSegmentsFromLine(currentCoordRow)
+      : [];
+
+    const validColSegments = currentCoordCol
+      ? this.getValidSegmentsFromLine(currentCoordCol)
+      : [];
+
+    const validSegments = [...validRowSegments, ...validColSegments];
+
+    return validSegments.filter(
+      (segment) => segment.length >= smallestShipLength
+    );
+  }
+
+  getValidSegmentsFromLine(lineArray) {
+    const validSegments = [];
+    let currentSegment = [];
+
+    for (let coord of lineArray) {
+      if (!this.isAlreadyTried(coord)) {
+        currentSegment.push(coord);
+      } else if (currentSegment.length !== 0) {
+        validSegments.push(currentSegment);
+        currentSegment = [];
+      }
+    }
+
+    if (currentSegment.length !== 0) {
+      validSegments.push(currentSegment);
+      currentSegment = [];
+    }
+
+    return validSegments;
+  }
+
   isSameCoord(coord1, coord2) {
+    if (
+      !coord1 ||
+      !coord2 ||
+      !Array.isArray(coord1) ||
+      !Array.isArray(coord2)
+    ) {
+      console.warn('Invalid coords passed to isSameCoord:', coord1, coord2);
+      return false;
+    }
+
     return coord1[0] === coord2[0] && coord1[1] === coord2[1];
   }
 
