@@ -24,6 +24,8 @@ const playerVsComp = (function () {
 
   const player = new Player(false);
   player.gameboard.boardCoordinates();
+  player.gameboard.boardRowCoords();
+  player.gameboard.boardColCoords();
   player.gameboard.shipPlacement();
   const shipCoordinates = player.gameboard.shipCoordinates.flat();
   const fleetCells = document.querySelectorAll('.fleetCell');
@@ -44,7 +46,6 @@ const playerVsComp = (function () {
       [1, 0],
       [-1, 0],
     ],
-    lastTriedCoord: null,
   };
 
   (function showPlayerFleet() {
@@ -118,18 +119,29 @@ const playerVsComp = (function () {
   })();
 
   function getNewRandomCoord() {
-    let coord;
+    let smartCoord;
 
     do {
       const xRandom = Math.floor(Math.random() * 10);
       const yRandom = Math.floor(Math.random() * 10) + 1;
-      coord = [String.fromCharCode(65 + xRandom), yRandom];
+      const coord = [String.fromCharCode(65 + xRandom), yRandom];
+      const viableZones = player.gameboard.getValidFireZones(coord);
+      const viableCoords = viableZones.flat();
+
+      if (viableCoords.length === 0) {
+        smartCoord = null;
+        continue;
+      }
+
+      const randomIndex = Math.floor(Math.random() * viableCoords.length);
+      smartCoord = viableCoords[randomIndex];
     } while (
-      player.gameboard.isAlreadyTried(coord) ||
-      bannedCoords.includes(coord.join(''))
+      !smartCoord ||
+      player.gameboard.isAlreadyTried(smartCoord) ||
+      bannedCoords.includes(smartCoord.join(''))
     );
 
-    return coord;
+    return smartCoord;
   }
 
   const enableCompAttack = function () {
@@ -162,10 +174,17 @@ const playerVsComp = (function () {
           [1, 0],
           [-1, 0],
         ],
-        lastTriedCoord: compCellCoord,
       };
       setTimeout(() => {
         findPlayerShipOnHit();
+      }, 500);
+    } else if (attackItems.result.hit && attackItems.result.shipSunk) {
+      markSurroundingAsBanned(
+        player.gameboard.shipCoordinates[attackItems.result.shipIndex]
+      );
+
+      setTimeout(() => {
+        fireBonusRandomShot();
       }, 500);
     } else {
       unlockAttackGrid();
@@ -277,8 +296,6 @@ const playerVsComp = (function () {
       turn: player,
     });
 
-    aiMemory.lastTriedCoord = nextCoord;
-
     if (attackItems.result.hit && !attackItems.result.shipSunk) {
       aiMemory.origin = nextCoord;
       setTimeout(() => findPlayerShipOnHit(), 500);
@@ -342,7 +359,6 @@ const playerVsComp = (function () {
           [1, 0],
           [-1, 0],
         ],
-        lastTriedCoord: coord,
       };
       setTimeout(() => {
         findPlayerShipOnHit();
