@@ -144,6 +144,42 @@ const playerVsComp = (function () {
     return smartCoord;
   }
 
+  function getValidChaseDirections(coord) {
+    const smallestShipLength = player.gameboard.smallestUnsunkShip();
+    if (!smallestShipLength) return [];
+
+    const dirs = [
+      [0, 1],
+      [0, -1],
+      [1, 0],
+      [-1, 0],
+    ];
+
+    const validDirs = dirs.filter(([x, y]) => {
+      let count = 1;
+      const [coordX, coordY] = [coord[0].charCodeAt(0), coord[1]];
+
+      for (let i = 1; i < smallestShipLength; i++) {
+        const newCol = String.fromCharCode(coordX + x * i);
+        const newRow = coordY + y * i;
+        const nextCoord = [newCol, newRow];
+
+        if (
+          !isValidCoord(nextCoord) ||
+          player.gameboard.isAlreadyTried(nextCoord) ||
+          bannedCoords.includes(nextCoord.join(''))
+        )
+          break;
+
+        count++;
+      }
+
+      return count >= smallestShipLength;
+    });
+
+    return validDirs;
+  }
+
   const enableCompAttack = function () {
     let compCellCoord = getNewRandomCoord();
     const attackItems = compAttackItems(compCellCoord);
@@ -163,17 +199,15 @@ const playerVsComp = (function () {
       lockAttackGrid();
     } else if (attackItems.result.hit && !attackItems.result.shipSunk) {
       lockAttackGrid();
+
+      const smartDirections = getValidChaseDirections(compCellCoord);
+
       aiMemory = {
         chasing: true,
         firstHit: compCellCoord,
         origin: compCellCoord,
         directionIndex: 0,
-        directions: [
-          [0, 1],
-          [0, -1],
-          [1, 0],
-          [-1, 0],
-        ],
+        directions: smartDirections,
       };
       setTimeout(() => {
         findPlayerShipOnHit();
@@ -267,20 +301,28 @@ const playerVsComp = (function () {
       origin[1] + direction[1],
     ];
 
-    if (
-      !isValidCoord(nextCoord) ||
-      player.gameboard.isAlreadyTried(nextCoord) ||
-      bannedCoords.includes(nextCoord.join(''))
+    while (
+      aiMemory.directionIndex < aiMemory.directions.length &&
+      (!isValidCoord(nextCoord) ||
+        player.gameboard.isAlreadyTried(nextCoord) ||
+        bannedCoords.includes(nextCoord.join('')))
     ) {
       aiMemory.directionIndex++;
-      if (aiMemory.directionIndex >= aiMemory.directions.length) {
-        aiMemory.chasing = false;
-        unlockAttackGrid();
-        return;
-      }
-
       aiMemory.origin = aiMemory.firstHit;
-      setTimeout(() => findPlayerShipOnHit(), 500);
+
+      if (aiMemory.directionIndex < aiMemory.directions.length) {
+        direction = aiMemory.directions[aiMemory.directionIndex];
+        origin = aiMemory.origin;
+        nextCoord = [
+          String.fromCharCode(origin[0].charCodeAt(0) + direction[0]),
+          origin[1] + direction[1],
+        ];
+      }
+    }
+
+    if (aiMemory.directionIndex >= aiMemory.directions.length) {
+      aiMemory.chasing = false;
+      unlockAttackGrid();
       return;
     }
 
