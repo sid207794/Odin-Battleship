@@ -1,15 +1,82 @@
 import { Gameboard, Player } from './logic.js';
 
-const createGrid = (function () {
-  const fleetGrid = document.querySelector('.fleetGrid');
-  const attackGrid = document.querySelector('.attackGrid');
+const fleet = document.querySelector('.fleet');
+const attackArea = document.querySelector('.attackArea');
+
+export const gameModeSelect = (function () {
+  fleet.replaceChildren();
+  attackArea.replaceChildren();
+
+  const fleetOption = document.createElement('div');
+  fleetOption.classList.add('fleetOption');
+
+  fleet.appendChild(fleetOption);
+
+  const optionsText = document.createElement('div');
+  optionsText.classList.add('optionText');
+  optionsText.textContent = 'SELECT GAME MODE';
+  const options = document.createElement('div');
+  options.classList.add('options');
+
+  fleetOption.appendChild(optionsText);
+  fleetOption.appendChild(options);
+
+  const optionArray = ['A.I. (P-V-E)', 'PLAYER (P-V-P)'];
+
+  for (let i = 1; i <= 2; i++) {
+    const optionNum = document.createElement('div');
+    optionNum.classList.add(`option${i}`);
+    optionNum.innerHTML = `<button class='button${i}'>${optionArray[i - 1]}</button>`;
+    options.appendChild(optionNum);
+  }
+})();
+
+export const fleetPlacementOptions = function () {
+  fleet.replaceChildren();
+  attackArea.replaceChildren();
+
+  const fleetOption = document.createElement('div');
+  fleetOption.classList.add('fleetOption');
+
+  fleet.appendChild(fleetOption);
+
+  const optionsText = document.createElement('div');
+  optionsText.classList.add('optionText');
+  optionsText.textContent = 'SELECT FLEET PLACEMENT TYPE';
+  const options = document.createElement('div');
+  options.classList.add('options');
+
+  fleetOption.appendChild(optionsText);
+  fleetOption.appendChild(options);
+
+  const optionArray = ['RANDOMIZED', 'CUSTOM COORDINATES', 'MANUAL RELOCATION'];
+
+  for (let i = 1; i <= 3; i++) {
+    const optionNum = document.createElement('div');
+    optionNum.classList.add(`option${i}`);
+    optionNum.innerHTML = `<button class='button${i}'>${optionArray[i - 1]}</button>`;
+    options.appendChild(optionNum);
+  }
+};
+
+export const createGrid = function () {
+  fleet.replaceChildren();
+  attackArea.replaceChildren();
+
+  const fleetGrid = document.createElement('div');
+  const attackGrid = document.createElement('div');
+  fleetGrid.classList.add('fleetGrid');
+  attackGrid.classList.add('attackGrid');
+
+  fleet.appendChild(fleetGrid);
+  attackArea.appendChild(attackGrid);
 
   for (let i = 0; i < 10; i++) {
     for (let j = 0; j < 10; j++) {
-      const fleeDdiv = document.createElement('div');
-      fleeDdiv.classList.add(`${String.fromCharCode(65 + j)}${i + 1}`);
-      fleeDdiv.classList.add('fleetCell');
-      fleetGrid.appendChild(fleeDdiv);
+      const fleetDdiv = document.createElement('div');
+      fleetDdiv.classList.add(`${String.fromCharCode(65 + j)}${i + 1}`);
+      fleetDdiv.classList.add('fleetCell');
+      fleetGrid.appendChild(fleetDdiv);
 
       const attackDiv = document.createElement('div');
       attackDiv.classList.add(`${String.fromCharCode(65 + j)}${i + 1}`);
@@ -17,9 +84,9 @@ const createGrid = (function () {
       attackGrid.appendChild(attackDiv);
     }
   }
-})();
+};
 
-const playerVsComp = (function () {
+export const playerVsComp = function () {
   let bannedCoords = [];
 
   const player = new Player(false);
@@ -148,36 +215,72 @@ const playerVsComp = (function () {
     const smallestShipLength = player.gameboard.smallestUnsunkShip();
     if (!smallestShipLength) return [];
 
-    const dirs = [
-      [0, 1],
-      [0, -1],
-      [1, 0],
-      [-1, 0],
+    const dirPairs = [
+      [
+        [0, 1],
+        [0, -1],
+      ],
+      [
+        [1, 0],
+        [-1, 0],
+      ],
     ];
 
-    const validDirs = dirs.filter(([x, y]) => {
-      let count = 1;
-      const [coordX, coordY] = [coord[0].charCodeAt(0), coord[1]];
+    const validDirs = [];
 
+    for (let [dirA, dirB] of dirPairs) {
+      let count = 1;
+
+      count += countValidSteps(coord, dirA);
+      count += countValidSteps(coord, dirB);
+
+      if (count >= smallestShipLength) {
+        if (isValidDirection(coord, dirA)) validDirs.push(dirA);
+        if (isValidDirection(coord, dirB)) validDirs.push(dirB);
+      }
+    }
+
+    return shuffle(validDirs);
+
+    function countValidSteps(start, [x, y]) {
+      let steps = 0;
+      let [col, row] = [start[0].charCodeAt(0), start[1]];
       for (let i = 1; i < smallestShipLength; i++) {
-        const newCol = String.fromCharCode(coordX + x * i);
-        const newRow = coordY + y * i;
+        const newCol = String.fromCharCode(col + x * i);
+        const newRow = row + y * i;
         const nextCoord = [newCol, newRow];
 
         if (
           !isValidCoord(nextCoord) ||
           player.gameboard.isAlreadyTried(nextCoord) ||
           bannedCoords.includes(nextCoord.join(''))
-        )
+        ) {
           break;
-
-        count++;
+        }
+        steps++;
       }
+      return steps;
+    }
 
-      return count >= smallestShipLength;
-    });
+    function isValidDirection(start, [x, y]) {
+      const newCol = String.fromCharCode(start[0].charCodeAt(0) + x);
+      const newRow = start[1] + y;
+      const next = [newCol, newRow];
+      return (
+        isValidCoord(next) &&
+        !player.gameboard.isAlreadyTried(next) &&
+        !bannedCoords.includes(next.join(''))
+      );
+    }
+  }
 
-    return validDirs;
+  function shuffle(dirs) {
+    for (let i = dirs.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [dirs[i], dirs[j]] = [dirs[j], dirs[i]];
+    }
+
+    return dirs;
   }
 
   const enableCompAttack = function () {
@@ -339,6 +442,20 @@ const playerVsComp = (function () {
     });
 
     if (attackItems.result.hit && !attackItems.result.shipSunk) {
+      const hitDir = aiMemory.directions[aiMemory.directionIndex];
+      const oppositeDir = [-hitDir[0], -hitDir[1]];
+
+      const hasOpposite = aiMemory.directions.find(
+        (dir) => dir[0] === oppositeDir[0] && dir[1] === oppositeDir[1]
+      );
+
+      if (hasOpposite) {
+        aiMemory.directions = [hitDir, oppositeDir];
+      } else {
+        aiMemory.directions = [hitDir];
+      }
+
+      aiMemory.directionIndex = 0;
       aiMemory.origin = nextCoord;
       setTimeout(() => findPlayerShipOnHit(), 500);
     } else if (player.gameboard.isGameOver()) {
@@ -390,17 +507,13 @@ const playerVsComp = (function () {
     }
 
     if (attackItems.result.hit && !attackItems.result.shipSunk) {
+      const smartDirections = getValidChaseDirections(coord);
       aiMemory = {
         chasing: true,
         firstHit: coord,
         origin: coord,
         directionIndex: 0,
-        directions: [
-          [0, 1],
-          [0, -1],
-          [1, 0],
-          [-1, 0],
-        ],
+        directions: smartDirections,
       };
       setTimeout(() => {
         findPlayerShipOnHit();
@@ -449,4 +562,4 @@ const playerVsComp = (function () {
       }
     }
   }
-})();
+};
