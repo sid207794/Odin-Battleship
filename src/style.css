@@ -284,3 +284,49 @@ body {
   filter: invert(20%) sepia(100%) saturate(5000%) hue-rotate(0deg)
     brightness(150%) contrast(100%) drop-shadow(0 0 3px black) !important;
 }
+
+.fleetOption {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10vh;
+}
+
+.optionText {
+  font-family: 'Press Start 2P', serif;
+  font-weight: bold;
+  color: white;
+  font-size: 3vmin;
+}
+
+.fleetOption .options {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3vh;
+}
+
+.fleetOption .options > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fleetOption .options > div > button {
+  height: 6vh;
+  width: 45vh;
+  background-color: silver;
+  border: outset;
+  font-family: 'Press Start 2P', serif;
+  color: black;
+  font-size: 2vmin;
+  cursor: pointer;
+}
+
+.fleetOption .options > div > button:hover {
+  background-color: rgb(101, 98, 98);
+  color: white;
+  border-color: grey;
+}
