@@ -115,7 +115,7 @@ export const playerVsComp = function () {
     ],
   };
 
-  (function showPlayerFleet() {
+  function showPlayerFleet() {
     for (let child of fleetCells) {
       const cellCoord = [
         child.classList[0].charAt(0),
@@ -131,9 +131,177 @@ export const playerVsComp = function () {
         child.style.backgroundColor = 'white';
       }
     }
-  })();
+  }
 
-  (function enablePlayerAttack() {
+  function customPlayerFleet() {
+    let customShipCoordinates = new Array(5).fill(null);
+    const shipNames = player.gameboard.shipTypes;
+
+    (function shipSelector() {
+      const shipSelectLeft = document.querySelector(
+        '.playerData .coordDataWrapper .shipSelect .leftScrollButton'
+      );
+      const shipSelectView = document.querySelector(
+        '.playerData .coordDataWrapper .shipSelect .viewBox'
+      );
+      const shipSelectRight = document.querySelector(
+        '.playerData .coordDataWrapper .shipSelect .rightScrollButton'
+      );
+
+      shipSelectView.textContent = 'SELECT SHIP';
+      let index = 0;
+
+      shipSelectRight.addEventListener('click', () => {
+        shipSelectView.textContent = shipNames[index];
+        if (index < 4) {
+          index++;
+        } else {
+          index = 0;
+        }
+      });
+
+      shipSelectLeft.addEventListener('click', () => {
+        if (index > 1) {
+          index--;
+        } else if (
+          index === 1 ||
+          (index === 0 && shipSelectView.textContent === 'SELECT SHIP')
+        ) {
+          index = 5;
+        } else if (index === 0) {
+          index = 4;
+        }
+
+        shipSelectView.textContent = shipNames[index - 1];
+
+        if (index === 5) index = 0;
+      });
+    })();
+
+    (function xStartCoord() {
+      const xStartCoordLeft = document.querySelector(
+        '.playerData .coordDataWrapper .startCoord .xOrdinate .leftScrollButton'
+      );
+      const xStartCoordView = document.querySelector(
+        '.playerData .coordDataWrapper .startCoord .xOrdinate .viewBox'
+      );
+      const xStartCoordRight = document.querySelector(
+        '.playerData .coordDataWrapper .startCoord .xOrdinate .rightScrollButton'
+      );
+
+      xStartCoordView.textContent = 'X';
+      let charCode = 65;
+
+      xStartCoordRight.addEventListener('click', () => {
+        xStartCoordView.textContent = String.fromCharCode([charCode]);
+        if (charCode < 74) {
+          charCode++;
+        } else {
+          charCode = 65;
+        }
+      });
+
+      xStartCoordLeft.addEventListener('click', () => {
+        if (charCode > 66) {
+          charCode--;
+        } else if (
+          charCode === 66 ||
+          (charCode === 65 && xStartCoordView.textContent === 'X')
+        ) {
+          charCode = 75;
+        } else if (charCode === 65) {
+          charCode = 74;
+        }
+
+        xStartCoordView.textContent = String.fromCharCode([charCode - 1]);
+
+        if (charCode === 75) charCode = 65;
+      });
+    })();
+
+    (function yStartCoord() {
+      const yStartCoordLeft = document.querySelector(
+        '.playerData .coordDataWrapper .startCoord .yOrdinate .leftScrollButton'
+      );
+      const yStartCoordView = document.querySelector(
+        '.playerData .coordDataWrapper .startCoord .yOrdinate .viewBox'
+      );
+      const yStartCoordRight = document.querySelector(
+        '.playerData .coordDataWrapper .startCoord .yOrdinate .rightScrollButton'
+      );
+
+      yStartCoordView.textContent = 'Y';
+      let num = 1;
+
+      yStartCoordRight.addEventListener('click', () => {
+        yStartCoordView.textContent = num;
+        if (num < 10) {
+          num++;
+        } else {
+          num = 1;
+        }
+      });
+
+      yStartCoordLeft.addEventListener('click', () => {
+        if (num > 2) {
+          num--;
+        } else if (
+          num === 2 ||
+          (num === 1 && yStartCoordView.textContent === 'Y')
+        ) {
+          num = 11;
+        } else if (num === 1) {
+          num = 10;
+        }
+
+        yStartCoordView.textContent = num - 1;
+
+        if (num === 11) num = 1;
+      });
+    })();
+
+    (function orientation() {
+      const orientationLeft = document.querySelector(
+        '.playerData .coordDataWrapper .orientation .leftScrollButton'
+      );
+      const orientationView = document.querySelector(
+        '.playerData .coordDataWrapper .orientation .viewBox'
+      );
+      const orientationRight = document.querySelector(
+        '.playerData .coordDataWrapper .orientation .rightScrollButton'
+      );
+
+      orientationView.textContent = 'ORIENTATION';
+      let orientationArray = ['HORIZONTAL', 'VERTICAL'];
+      let index = 0;
+
+      orientationRight.addEventListener('click', () => {
+        orientationView.textContent = orientationArray[index];
+        if (index === 0) {
+          index++;
+        } else {
+          index = 0;
+        }
+      });
+
+      orientationLeft.addEventListener('click', () => {
+        if (
+          index === 1 ||
+          (index === 0 && orientationView.textContent === 'ORIENTATION')
+        ) {
+          index = 2;
+        } else if (index === 0) {
+          index = 1;
+        }
+
+        orientationView.textContent = orientationArray[index - 1];
+
+        if (index === 2) index = 0;
+      });
+    })();
+  }
+
+  function enablePlayerAttack() {
     const shipStatusRight = document.querySelectorAll(
       '.rightPanel .shipStatus .shipWrap'
     );
@@ -183,7 +351,7 @@ export const playerVsComp = function () {
         }
       });
     }
-  })();
+  }
 
   function getNewRandomCoord() {
     let smartCoord;
@@ -562,4 +730,6 @@ export const playerVsComp = function () {
       }
     }
   }
+
+  return { showPlayerFleet, customPlayerFleet, enablePlayerAttack };
 };
