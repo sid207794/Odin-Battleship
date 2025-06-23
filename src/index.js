@@ -9,10 +9,12 @@ import {
 (function gameStartingEventListeners() {
   const aiOption = document.querySelector('.fleetOption .option1 .button1');
   const playerOption = document.querySelector('.fleetOption .option2 .button2');
+  const coordDataWrapper = document.querySelector(
+    '.playerData .coordDataWrapper'
+  );
 
   aiOption.addEventListener('click', () => {
     fleetPlacementOptions();
-
     const randomized = document.querySelector('.fleetOption .option1 .button1');
     const customCoords = document.querySelector(
       '.fleetOption .option2 .button2'
@@ -21,9 +23,18 @@ import {
 
     randomized.addEventListener('click', () => {
       createGrid();
-      playerVsComp();
+      const showFleet = playerVsComp();
+      showFleet.showPlayerFleet();
+      showFleet.enablePlayerAttack();
     });
-    customCoords.addEventListener('click', () => {});
+
+    customCoords.addEventListener('click', () => {
+      createGrid();
+      coordDataWrapper.classList.add('visibleWrap');
+      const showFleet = playerVsComp();
+      showFleet.customPlayerFleet();
+    });
+
     manualMove.addEventListener('click', () => {});
   });
 
