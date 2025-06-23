@@ -222,8 +222,164 @@ body {
 
 #gameplayZone .playerData {
   display: flex;
+  justify-content: center;
+  align-items: center;
   height: 10%;
-  background-color: transparent;
+  background-color: #252525;
+  border-top: outset calc(3 * 100vmin / 730);
+  border-bottom: outset calc(3 * 100vmin / 730);
+  border-color: grey;
+  box-sizing: border-box;
+}
+
+.playerData .coordDataWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+  gap: 0.75vw;
+  padding: 0 0.25vw;
+}
+
+.coordDataWrapper .shipSelect,
+.coordDataWrapper .startCoord,
+.coordDataWrapper .orientation,
+.coordDataWrapper .endCoord,
+.coordDataWrapper .clearOrConfirm {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: solid calc(2 * 100vmin / 730) silver;
+  border-radius: calc(10 * 100vmin / 730);
+  box-sizing: border-box;
+  height: 7vh;
+  width: 11.75vw;
+  gap: 0.25vw;
+  padding: 0.25vmin;
+}
+
+.coordDataWrapper .view {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.coordDataWrapper .startCoord {
+  width: 13.75vw;
+  gap: 1vw;
+}
+
+.coordDataWrapper .clearOrConfirm {
+  width: 12vh;
+}
+
+.coordDataWrapper .viewBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 4vh;
+  background-color: black;
+  border-radius: calc(5 * 100vmin / 730);
+  font-family: 'Press Start 2P', serif;
+  font-size: 1vmin;
+  font-weight: bold;
+  text-shadow:
+    0 0 10px lime,
+    0 0 10px lime;
+  color: lime;
+}
+
+.coordDataWrapper .shipSelect .viewBox {
+  width: 7vw;
+}
+
+.startCoord .xOrdinate,
+.startCoord .yOrdinate {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25vw;
+  height: 5vh;
+  width: 5.75vw;
+  border-radius: calc(10 * 100vmin / 730);
+}
+
+.coordDataWrapper .xOrdinate .viewBox {
+  width: 4vh;
+}
+
+.coordDataWrapper .yOrdinate .viewBox {
+  width: 4vh;
+}
+
+.coordDataWrapper .orientation .viewBox {
+  width: 7vw;
+}
+
+.coordDataWrapper .endCoord {
+  width: 10vh;
+}
+
+.endCoord .viewBox {
+  width: 8vh;
+}
+
+.coordDataWrapper .clearOrConfirm button {
+  height: 4vh;
+  width: 10vh;
+  border: inset calc(2 * 100vmin / 730) green;
+  border-radius: calc(5 * 100vmin / 730);
+  background-color: lime;
+  box-sizing: border-box;
+  font-family: 'Press Start 2P', serif;
+  font-weight: bold;
+  font-size: 1.05vmin;
+  color: black;
+  cursor: pointer;
+}
+
+.coordDataWrapper .leftScroll,
+.coordDataWrapper .rightScroll {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 3vh;
+  width: 3vh;
+}
+
+.coordDataWrapper .leftScroll button,
+.coordDataWrapper .rightScroll button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 3vh;
+  width: 3vh;
+  border: inset calc(2 * 100vmin / 730) white;
+  border-radius: calc(5 * 100vmin / 730);
+  background-color: black;
+  cursor: pointer;
+}
+
+.coordDataWrapper .leftScroll button:active,
+.coordDataWrapper .rightScroll button:active {
+  border: outset calc(2 * 100vmin / 730) white;
+}
+
+.coordDataWrapper .leftScroll button img,
+.coordDataWrapper .rightScroll button img {
+  height: 3vh;
+  width: 3vh;
+  filter: brightness(0) saturate(100%) invert(83%) sepia(100%) hue-rotate(70deg)
+    saturate(2900%) brightness(125%);
+}
+
+.coordDataWrapper .leftScroll button:active img,
+.coordDataWrapper .rightScroll button:active img {
+  filter: invert(100%);
+}
+
+.playerData .visibleWrap {
+  visibility: visible;
 }
 
 #gameplayZone .playzone {
@@ -318,7 +474,8 @@ body {
   height: 6vh;
   width: 45vh;
   background-color: silver;
-  border: outset;
+  border: outset calc(3 * 100vmin / 730);
+  box-sizing: border-box;
   font-family: 'Press Start 2P', serif;
   color: black;
   font-size: 2vmin;
