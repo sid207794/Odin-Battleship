@@ -5,6 +5,7 @@ body {
   background-image: url('./images/blackGrid.jpg');
   background-size: cover;
   background-position: center;
+  user-select: none;
 }
 
 #gameScreen {
@@ -137,14 +138,39 @@ body {
 
 .leftPanel .actionStatus {
   flex: 1;
-}
-
-.leftPanel .turnIndicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 15vh;
   flex: 1;
 }
 
 .leftPanel .forfeit {
   flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 10vh;
+}
+
+.forfeit .start {
+  height: 6vh;
+  width: 15vh;
+  border: inset calc(3 * 100vmin / 730) maroon;
+  border-radius: calc(6 * 100vmin / 730);
+  background-color: red;
+  box-sizing: border-box;
+  font-family: 'Press Start 2P', serif;
+  font-weight: bold;
+  font-size: 2vmin;
+  color: white;
+  cursor: pointer;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.forfeit .start:active {
+  border: outset calc(3 * 100vmin / 730) maroon;
 }
 
 #gameScreen #rightSidebar {
@@ -232,11 +258,14 @@ body {
   box-sizing: border-box;
 }
 
+.playerData > div {
+  visibility: hidden;
+}
+
 .playerData .coordDataWrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  visibility: hidden;
   gap: 0.75vw;
   padding: 0 0.25vw;
 }
@@ -324,6 +353,13 @@ body {
   width: 8vh;
 }
 
+.endCoord .invalidCoords {
+  text-shadow:
+    0 0 10px red,
+    0 0 10px red;
+  color: red;
+}
+
 .coordDataWrapper .clearOrConfirm button {
   height: 4vh;
   width: 10vh;
@@ -336,6 +372,10 @@ body {
   font-size: 1.05vmin;
   color: black;
   cursor: pointer;
+}
+
+.coordDataWrapper .clearOrConfirm button:active {
+  border: outset calc(2 * 100vmin / 730) green;
 }
 
 .coordDataWrapper .leftScroll,
@@ -378,16 +418,59 @@ body {
   filter: invert(100%);
 }
 
-.playerData .visibleWrap {
-  visibility: visible;
+.visibleWrap {
+  visibility: visible !important;
 }
 
-#gameplayZone .playzone {
+#gameplaZone .playzoneWrap {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 70%;
+}
+
+.playzoneWrap .playzone,
+.playzoneWrap .xScale,
+.yScale {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.playzoneWrap .xScale {
+  height: 5vh;
   gap: 2vw;
+}
+
+.fleetScale,
+.attackScale {
+  display: grid;
+  grid-template: repeat(1, 1fr) / repeat(10, 1fr);
+  border: none;
+  height: 2vw;
+  width: 25vw;
+}
+
+.fleetScaleCell,
+.attackScaleCell,
+.yScaleCell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  background-color: transparent;
+  box-sizing: border-box;
+  z-index: 9997;
+  font-family: 'Press Start 2P', serif;
+  color: white;
+  font-size: 1.25vmin;
+}
+
+.yScale .midScale {
+  display: grid;
+  grid-template: repeat(10, 1fr) / repeat(1, 1fr);
+  border: none;
 }
 
 .playzone .fleet,
@@ -446,7 +529,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 10vh;
+  gap: 5vh;
 }
 
 .optionText {
