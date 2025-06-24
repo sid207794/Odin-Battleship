@@ -1,7 +1,10 @@
-import { Gameboard, Player } from './logic.js';
+import { Gameboard, Player, Ship } from './logic.js';
 
 const fleet = document.querySelector('.fleet');
 const attackArea = document.querySelector('.attackArea');
+const fleetScale = document.querySelector('.fleetScale');
+const attackScale = document.querySelector('.attackScale');
+const yScale = document.querySelector('.yScale .midScale');
 
 export const gameModeSelect = (function () {
   fleet.replaceChildren();
@@ -84,6 +87,29 @@ export const createGrid = function () {
       attackGrid.appendChild(attackDiv);
     }
   }
+
+  for (let i = 0; i < 10; i++) {
+    const fleetScaleDdiv = document.createElement('div');
+    fleetScaleDdiv.textContent = String.fromCharCode(65 + i);
+    fleetScaleDdiv.classList.add(`${String.fromCharCode(65 + i)}`);
+    fleetScaleDdiv.classList.add('fleetScaleCell');
+    fleetScale.appendChild(fleetScaleDdiv);
+
+    const attackScaleDdiv = document.createElement('div');
+    attackScaleDdiv.textContent = String.fromCharCode(65 + i);
+    attackScaleDdiv.classList.add(`${String.fromCharCode(65 + i)}`);
+    attackScaleDdiv.classList.add('attackScaleCell');
+    attackScale.appendChild(attackScaleDdiv);
+
+    const yScaleDdiv = document.createElement('div');
+    yScaleDdiv.textContent = i + 1;
+    yScaleDdiv.classList.add(`yScale${i + 1}`);
+    yScaleDdiv.classList.add('yScaleCell');
+    yScale.appendChild(yScaleDdiv);
+  }
+
+  yScale.style.height = '25vw';
+  yScale.style.width = '2vw';
 };
 
 export const playerVsComp = function () {
@@ -93,8 +119,7 @@ export const playerVsComp = function () {
   player.gameboard.boardCoordinates();
   player.gameboard.boardRowCoords();
   player.gameboard.boardColCoords();
-  player.gameboard.shipPlacement();
-  const shipCoordinates = player.gameboard.shipCoordinates.flat();
+  let shipCoordinates;
   const fleetCells = document.querySelectorAll('.fleetCell');
 
   const computer = new Player(true);
@@ -115,7 +140,9 @@ export const playerVsComp = function () {
     ],
   };
 
-  function showPlayerFleet() {
+  function whiteWashShipCell() {
+    shipCoordinates = player.gameboard.shipCoordinates.flat();
+
     for (let child of fleetCells) {
       const cellCoord = [
         child.classList[0].charAt(0),
@@ -133,9 +160,27 @@ export const playerVsComp = function () {
     }
   }
 
+  function showPlayerFleet() {
+    player.gameboard.shipPlacement();
+    whiteWashShipCell();
+  }
+
   function customPlayerFleet() {
-    let customShipCoordinates = new Array(5).fill(null);
     const shipNames = player.gameboard.shipTypes;
+
+    const endCoords = document.querySelector(
+      '.playerData .coordDataWrapper .endCoord .viewBox'
+    );
+    const confirmButton = document.querySelector('.clearOrConfirm .confirm');
+    const playButton = document.querySelector('.forfeit .start');
+
+    let customShipCoordinates = [[], [], [], [], []];
+    let customShipData = new Array(5).fill(null);
+
+    let finalShipIndex = null;
+    let finalXOrdinate = null;
+    let finalYOrdinate = null;
+    let finalOrientation = null;
 
     (function shipSelector() {
       const shipSelectLeft = document.querySelector(
@@ -153,11 +198,13 @@ export const playerVsComp = function () {
 
       shipSelectRight.addEventListener('click', () => {
         shipSelectView.textContent = shipNames[index];
+        finalShipIndex = index;
         if (index < 4) {
           index++;
         } else {
           index = 0;
         }
+        previewPlacement();
       });
 
       shipSelectLeft.addEventListener('click', () => {
@@ -173,9 +220,13 @@ export const playerVsComp = function () {
         }
 
         shipSelectView.textContent = shipNames[index - 1];
+        finalShipIndex = index - 1;
 
         if (index === 5) index = 0;
+        previewPlacement();
       });
+
+      return finalShipIndex;
     })();
 
     (function xStartCoord() {
@@ -194,11 +245,13 @@ export const playerVsComp = function () {
 
       xStartCoordRight.addEventListener('click', () => {
         xStartCoordView.textContent = String.fromCharCode([charCode]);
+        finalXOrdinate = String.fromCharCode([charCode]);
         if (charCode < 74) {
           charCode++;
         } else {
           charCode = 65;
         }
+        previewPlacement();
       });
 
       xStartCoordLeft.addEventListener('click', () => {
@@ -214,9 +267,13 @@ export const playerVsComp = function () {
         }
 
         xStartCoordView.textContent = String.fromCharCode([charCode - 1]);
+        finalXOrdinate = String.fromCharCode([charCode - 1]);
 
         if (charCode === 75) charCode = 65;
+        previewPlacement();
       });
+
+      return finalXOrdinate;
     })();
 
     (function yStartCoord() {
@@ -235,11 +292,13 @@ export const playerVsComp = function () {
 
       yStartCoordRight.addEventListener('click', () => {
         yStartCoordView.textContent = num;
+        finalYOrdinate = num;
         if (num < 10) {
           num++;
         } else {
           num = 1;
         }
+        previewPlacement();
       });
 
       yStartCoordLeft.addEventListener('click', () => {
@@ -255,9 +314,13 @@ export const playerVsComp = function () {
         }
 
         yStartCoordView.textContent = num - 1;
+        finalYOrdinate = num - 1;
 
         if (num === 11) num = 1;
+        previewPlacement();
       });
+
+      return finalYOrdinate;
     })();
 
     (function orientation() {
@@ -277,11 +340,13 @@ export const playerVsComp = function () {
 
       orientationRight.addEventListener('click', () => {
         orientationView.textContent = orientationArray[index];
+        finalOrientation = index;
         if (index === 0) {
           index++;
         } else {
           index = 0;
         }
+        previewPlacement();
       });
 
       orientationLeft.addEventListener('click', () => {
@@ -295,8 +360,153 @@ export const playerVsComp = function () {
         }
 
         orientationView.textContent = orientationArray[index - 1];
+        finalOrientation = index - 1;
 
         if (index === 2) index = 0;
+        previewPlacement();
+      });
+
+      return finalOrientation;
+    })();
+
+    function previewPlacement() {
+      if (
+        finalShipIndex === null ||
+        finalXOrdinate === null ||
+        finalYOrdinate === null ||
+        finalOrientation === null
+      )
+        return;
+
+      let isInvalidCustomPlacement = player.gameboard.isInvalidPlacement(
+        [finalXOrdinate, finalYOrdinate],
+        player.gameboard.shipLengths[finalShipIndex],
+        finalOrientation
+      );
+
+      for (let child of fleetCells) {
+        child.style.backgroundColor = 'rgb(0, 140, 255)';
+      }
+
+      whiteWashShipCell();
+
+      if (!isInvalidCustomPlacement) {
+        confirmButton.style.backgroundColor = 'lime';
+        confirmButton.style.color = 'black';
+        confirmButton.style.borderColor = 'green';
+        confirmButton.style.pointerEvents = 'auto';
+
+        if (finalOrientation === 0) {
+          const horizontalArray = horizontalCoords();
+          endCoords.classList.remove('invalidCoords');
+          endCoords.textContent = `${horizontalArray[horizontalArray.length - 1]}`;
+          highlightCells(horizontalArray, 'lime');
+        } else {
+          const verticalArray = verticalCoords();
+          endCoords.classList.remove('invalidCoords');
+          endCoords.textContent = `${verticalArray[verticalArray.length - 1]}`;
+          highlightCells(verticalArray, 'lime');
+        }
+      } else {
+        confirmButton.style.backgroundColor = 'red';
+        confirmButton.style.color = 'white';
+        confirmButton.style.borderColor = 'maroon';
+        confirmButton.style.pointerEvents = 'none';
+
+        if (finalOrientation === 0) {
+          const rawHorizontalArray = horizontalCoords();
+          endCoords.textContent = `${rawHorizontalArray[rawHorizontalArray.length - 1]}`;
+          endCoords.classList.add('invalidCoords');
+          const horizontalArray = rawHorizontalArray.filter((coord) =>
+            isValidCoord(coord)
+          );
+          highlightCells(horizontalArray, 'red');
+        } else {
+          const rawVerticalArray = verticalCoords();
+          endCoords.textContent = `${rawVerticalArray[rawVerticalArray.length - 1]}`;
+          endCoords.classList.add('invalidCoords');
+          const verticalArray = rawVerticalArray.filter((coord) =>
+            isValidCoord(coord)
+          );
+          highlightCells(verticalArray, 'red');
+        }
+      }
+
+      function horizontalCoords() {
+        const horCoords = player.gameboard.getHorizontalCoords(
+          [finalXOrdinate, finalYOrdinate],
+          player.gameboard.shipLengths[finalShipIndex]
+        );
+        return horCoords;
+      }
+
+      function verticalCoords() {
+        const verCoords = player.gameboard.getVerticalCoords(
+          [finalXOrdinate, finalYOrdinate],
+          player.gameboard.shipLengths[finalShipIndex]
+        );
+        return verCoords;
+      }
+
+      function highlightCells(array, color) {
+        for (let i = 0; i < array.length; i++) {
+          const cellCoord = document.querySelector(
+            `.fleetGrid .${array[i].join('')}`
+          );
+          cellCoord.style.backgroundColor = color;
+        }
+      }
+
+      return { horizontalCoords, verticalCoords };
+    }
+
+    (function confirmSelection() {
+      confirmButton.addEventListener('click', () => {
+        const previewFunction = previewPlacement();
+        const isInvalid = player.gameboard.isInvalidPlacement(
+          [finalXOrdinate, finalYOrdinate],
+          player.gameboard.shipLengths[finalShipIndex],
+          finalOrientation
+        );
+
+        if (!isInvalid) {
+          if (finalOrientation === 0) {
+            customShipCoordinates[finalShipIndex] =
+              previewFunction.horizontalCoords();
+          } else {
+            customShipCoordinates[finalShipIndex] =
+              previewFunction.verticalCoords();
+          }
+        }
+
+        player.gameboard.shipCoordinates = customShipCoordinates;
+
+        const newShip = new Ship(
+          player.gameboard.shipTypes[finalShipIndex],
+          player.gameboard.shipLengths[finalShipIndex],
+          player.gameboard.shipCoordinates[finalShipIndex]
+        );
+
+        customShipData[finalShipIndex] = newShip;
+        player.gameboard.allShipData = customShipData;
+
+        for (let child of fleetCells) {
+          child.style.backgroundColor = 'rgb(0, 140, 255)';
+        }
+
+        whiteWashShipCell();
+
+        if (
+          player.gameboard.allShipData.length !== 0 &&
+          player.gameboard.allShipData.every((item) => item !== null)
+        ) {
+          playButton.style.backgroundColor = 'lime';
+          playButton.style.color = 'black';
+          playButton.style.borderColor = 'green';
+          playButton.style.pointerEvents = 'auto';
+        }
+        console.log('shipCoordinates', player.gameboard.shipCoordinates);
+        console.log('allShipData', player.gameboard.allShipData);
       });
     })();
   }
