@@ -47,6 +47,7 @@ body {
   flex-direction: column;
   align-items: end;
   gap: 3vh;
+  visibility: hidden;
 }
 
 .carrierStatusWrap,
@@ -153,9 +154,13 @@ body {
   height: 10vh;
 }
 
-.forfeit .start {
+.forfeit .start,
+.forfeit .stop {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 6vh;
-  width: 15vh;
+  width: 18vh;
   border: inset calc(3 * 100vmin / 730) maroon;
   border-radius: calc(6 * 100vmin / 730);
   background-color: red;
@@ -166,11 +171,19 @@ body {
   color: white;
   cursor: pointer;
   pointer-events: none;
+  position: absolute;
   visibility: hidden;
 }
 
-.forfeit .start:active {
+.forfeit .start:active,
+.forfeit .stop:active {
   border: outset calc(3 * 100vmin / 730) maroon;
+}
+
+.forfeit .start:hover,
+.forfeit .stop:hover {
+  color: white !important;
+  text-shadow: 0 0 10px white;
 }
 
 #gameScreen #rightSidebar {
@@ -200,6 +213,7 @@ body {
   flex-direction: column;
   align-items: start;
   gap: 3vh;
+  visibility: hidden;
 }
 
 .rightPanel .carrierStatus,
@@ -363,19 +377,25 @@ body {
 .coordDataWrapper .clearOrConfirm button {
   height: 4vh;
   width: 10vh;
-  border: inset calc(2 * 100vmin / 730) green;
+  border: inset calc(2 * 100vmin / 730) maroon;
   border-radius: calc(5 * 100vmin / 730);
-  background-color: lime;
+  background-color: red;
   box-sizing: border-box;
   font-family: 'Press Start 2P', serif;
   font-weight: bold;
   font-size: 1.05vmin;
-  color: black;
+  color: white;
   cursor: pointer;
+  pointer-events: none;
 }
 
 .coordDataWrapper .clearOrConfirm button:active {
   border: outset calc(2 * 100vmin / 730) green;
+}
+
+.coordDataWrapper .clearOrConfirm button:hover {
+  color: white !important;
+  text-shadow: 0 0 10px white;
 }
 
 .coordDataWrapper .leftScroll,
