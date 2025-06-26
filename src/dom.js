@@ -10,6 +10,7 @@ const yScale = document.querySelector('.yScale .midScale');
 const coordDataWrapper = document.querySelector(
   '.playerData .coordDataWrapper'
 );
+const scores = document.querySelector('.playerData .scores');
 
 export const gameModeSelect = (function () {
   fleet.replaceChildren();
@@ -133,6 +134,31 @@ export function createCustomButtons() {
   clearOrConfirm.appendChild(confirmButton);
 }
 
+export const scoreboard = function () {
+  scores.replaceChildren();
+  const parentNames = [
+    'leftName',
+    'leftplayStatus',
+    'timer',
+    'rightplayStatus',
+    'rightName',
+  ];
+
+  for (let i = 0; i < 5; i++) {
+    const divParent = document.createElement('div');
+    const viewDiv = document.createElement('div');
+    const viewBoxDiv = document.createElement('div');
+
+    divParent.classList.add(`${parentNames[i]}`);
+    viewDiv.classList.add('view');
+    viewBoxDiv.classList.add('viewBox');
+
+    scores.appendChild(divParent);
+    divParent.appendChild(viewDiv);
+    viewDiv.appendChild(viewBoxDiv);
+  }
+};
+
 export const createGrid = function () {
   fleet.replaceChildren();
   attackArea.replaceChildren();
@@ -187,6 +213,53 @@ export const createGrid = function () {
 };
 
 export const playerVsComp = function () {
+  const leftName = document.querySelector('.scores .leftName .viewBox');
+  const rightName = document.querySelector('.scores .rightName .viewBox');
+  const leftplayStatus = document.querySelector(
+    '.scores .leftplayStatus .viewBox'
+  );
+  const rightplayStatus = document.querySelector(
+    '.scores .rightplayStatus .viewBox'
+  );
+  const timer = document.querySelector('.scores .timer .viewBox');
+  leftName.textContent = 'P1';
+  rightName.textContent = 'AI';
+  leftplayStatus.textContent = 'Playing...';
+  rightplayStatus.textContent = 'Waiting...';
+
+  const humanWins = [
+    'WINNER',
+    'G.O.A.T',
+    'GODMODE',
+    'CLUTCH',
+    'KING',
+    'VICTOR',
+  ];
+  const humanLoss = [
+    'SUNK',
+    'TRASH',
+    'TOAST',
+    'SKILL ISSUE',
+    'BULLIED',
+    'SCHOOLED',
+  ];
+  const aiWins = [
+    'SUPERIOR',
+    'WINNER',
+    'FLAWLESS',
+    'BOTMODE',
+    'EFFICIENT',
+    'DOMINATOR',
+  ];
+  const aiLoss = [
+    'COOKED',
+    'MALFUNCTION',
+    'OVERRUN',
+    'PATCH_ME',
+    'DOWNBAD',
+    '404_SKILL',
+  ];
+
   let bannedCoords = [];
 
   const player = new Player(false);
@@ -628,18 +701,34 @@ export const playerVsComp = function () {
         if (computer.gameboard.isGameOver()) {
           console.log('GAME OVER!');
           lockAttackGrid();
+          timer.textContent = 'GAME OVER';
+          leftplayStatus.textContent = `${humanWins[Math.floor(Math.random() * humanWins.length)]}`;
+          rightplayStatus.textContent = `${aiLoss[Math.floor(Math.random() * aiLoss.length)]}`;
+          rightplayStatus.classList.add('invalidCoords');
         } else if (result.hit) {
           return;
         } else if (aiMemory.chasing) {
           lockAttackGrid();
           setTimeout(() => {
+            rightplayStatus.textContent = `Playing...`;
             findPlayerShipOnHit();
           }, 500);
         } else {
           lockAttackGrid();
+          let dots = '';
+          let count = 0;
+          const interval = setInterval(() => {
+            dots = dots.length < 3 ? dots + '.' : '';
+            rightplayStatus.textContent = `Thinking${dots}`;
+            count++;
+
+            if (count > 6) clearInterval(interval);
+          }, 300);
+
           setTimeout(() => {
+            rightplayStatus.textContent = `Playing...`;
             enableCompAttack();
-          }, 500);
+          }, 2200);
         }
       });
     }
@@ -760,6 +849,10 @@ export const playerVsComp = function () {
     if (player.gameboard.isGameOver()) {
       console.log('GAME OVER!');
       lockAttackGrid();
+      timer.textContent = 'GAME OVER';
+      leftplayStatus.textContent = `${humanLoss[Math.floor(Math.random() * humanLoss.length)]}`;
+      rightplayStatus.textContent = `${aiWins[Math.floor(Math.random() * aiWins.length)]}`;
+      leftplayStatus.classList.add('invalidCoords');
     } else if (attackItems.result.hit && !attackItems.result.shipSunk) {
       lockAttackGrid();
 
@@ -773,6 +866,7 @@ export const playerVsComp = function () {
         directions: smartDirections,
       };
       setTimeout(() => {
+        rightplayStatus.textContent = `Playing...`;
         findPlayerShipOnHit();
       }, 500);
     } else if (attackItems.result.hit && attackItems.result.shipSunk) {
@@ -847,10 +941,13 @@ export const playerVsComp = function () {
 
   function lockAttackGrid() {
     attackCells.forEach((child) => (child.style.pointerEvents = 'none'));
+    leftplayStatus.textContent = 'Waiting...';
   }
 
   function unlockAttackGrid() {
     attackCells.forEach((child) => (child.style.pointerEvents = 'auto'));
+    rightplayStatus.textContent = `Waiting...`;
+    leftplayStatus.textContent = 'Playing...';
   }
 
   function findPlayerShipOnHit() {
@@ -920,6 +1017,10 @@ export const playerVsComp = function () {
       setTimeout(() => findPlayerShipOnHit(), 500);
     } else if (player.gameboard.isGameOver()) {
       lockAttackGrid();
+      timer.textContent = 'GAME OVER';
+      leftplayStatus.textContent = `${humanLoss[Math.floor(Math.random() * humanLoss.length)]}`;
+      rightplayStatus.textContent = `${aiWins[Math.floor(Math.random() * aiWins.length)]}`;
+      leftplayStatus.classList.add('invalidCoords');
       console.log('GAME OVER! AI wins');
     } else if (attackItems.result.shipSunk) {
       markSurroundingAsBanned(
@@ -962,6 +1063,10 @@ export const playerVsComp = function () {
 
     if (player.gameboard.isGameOver()) {
       lockAttackGrid();
+      timer.textContent = 'GAME OVER';
+      leftplayStatus.textContent = `${humanLoss[Math.floor(Math.random() * humanLoss.length)]}`;
+      rightplayStatus.textContent = `${aiWins[Math.floor(Math.random() * aiWins.length)]}`;
+      leftplayStatus.classList.add('invalidCoords');
       console.log('GAME OVER! AI wins');
       return;
     }
