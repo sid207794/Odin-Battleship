@@ -5,11 +5,13 @@ import {
   createGrid,
   playerVsComp,
   createCustomButtons,
+  scoreboard,
 } from './dom.js';
 
 (function gameStartingEventListeners() {
   const aiOption = document.querySelector('.fleetOption .option1 .button1');
   const playerOption = document.querySelector('.fleetOption .option2 .button2');
+  const scores = document.querySelector('.playerData .scores');
   const coordDataWrapper = document.querySelector(
     '.playerData .coordDataWrapper'
   );
@@ -32,7 +34,9 @@ import {
     randomized.addEventListener('click', () => {
       shipStatus.forEach((side) => side.classList.add('visibleWrap'));
       playButton.classList.remove('visibleWrap');
+      scores.classList.add('visibleWrap');
       createGrid();
+      scoreboard();
       showFleet = playerVsComp();
       showFleet.showPlayerFleet();
       showFleet.enablePlayerAttack();
@@ -44,6 +48,7 @@ import {
       playButton.classList.add('visibleWrap');
       createGrid();
       attackArea.style.pointerEvents = 'none';
+      scoreboard();
       showFleet = playerVsComp();
       showFleet.customPlayerFleet();
     });
@@ -51,6 +56,7 @@ import {
     playButton.addEventListener('click', () => {
       playButton.style.pointerEvents = 'none';
       coordDataWrapper.classList.remove('visibleWrap');
+      scores.classList.add('visibleWrap');
       playButton.classList.remove('visibleWrap');
       stopButton.classList.add('visibleWrap');
       stopButton.style.pointerEvents = 'auto';
@@ -62,6 +68,7 @@ import {
     stopButton.addEventListener('click', () => {
       stopButton.style.pointerEvents = 'none';
       coordDataWrapper.classList.add('visibleWrap');
+      scores.classList.remove('visibleWrap');
       stopButton.classList.remove('visibleWrap');
       playButton.classList.add('visibleWrap');
       playButton.style.backgroundColor = 'red';
@@ -82,6 +89,7 @@ import {
       );
       createGrid();
       attackArea.style.pointerEvents = 'none';
+      scoreboard();
       showFleet = playerVsComp();
       showFleet.resetShipData();
       showFleet.customPlayerFleet();
