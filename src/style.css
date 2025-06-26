@@ -276,19 +276,26 @@ body {
   visibility: hidden;
 }
 
-.playerData .coordDataWrapper {
+.playerData .coordDataWrapper,
+.playerData .scores {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 0.75vw;
   padding: 0 0.25vw;
+  position: absolute;
 }
 
 .coordDataWrapper .shipSelect,
 .coordDataWrapper .startCoord,
 .coordDataWrapper .orientation,
 .coordDataWrapper .endCoord,
-.coordDataWrapper .clearOrConfirm {
+.coordDataWrapper .clearOrConfirm,
+.scores .leftName,
+.scores .leftplayStatus,
+.scores .timer,
+.scores .rightplayStatus,
+.scores .rightName {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -301,7 +308,7 @@ body {
   padding: 0.25vmin;
 }
 
-.coordDataWrapper .view {
+.view {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -316,7 +323,7 @@ body {
   width: 12vh;
 }
 
-.coordDataWrapper .viewBox {
+.playerData .viewBox {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -330,6 +337,27 @@ body {
     0 0 10px lime,
     0 0 10px lime;
   color: lime;
+}
+
+.scores .leftName .viewBox,
+.scores .rightName .viewBox {
+  font-size: 1.15vmin;
+  width: 5vh;
+}
+
+.scores .leftplayStatus .viewBox,
+.scores .rightplayStatus .viewBox {
+  font-size: 1.15vmin;
+  width: 16vh;
+}
+
+.scores .timer .viewBox {
+  font-size: 1.35vmin;
+  width: 15vh;
+  text-shadow:
+    0 0 10px white,
+    0 0 5px white;
+  color: white;
 }
 
 .coordDataWrapper .shipSelect .viewBox {
@@ -359,7 +387,9 @@ body {
   width: 7vw;
 }
 
-.coordDataWrapper .endCoord {
+.coordDataWrapper .endCoord,
+.scores .leftName,
+.scores .rightName {
   width: 10vh;
 }
 
@@ -367,7 +397,8 @@ body {
   width: 8vh;
 }
 
-.endCoord .invalidCoords {
+.endCoord .invalidCoords,
+.scores .invalidCoords {
   text-shadow:
     0 0 10px red,
     0 0 10px red;
