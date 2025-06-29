@@ -1,6 +1,8 @@
 import { Gameboard, Player, Ship } from './logic.js';
+import { typewriterEffect } from './index.js';
 import menuLeft from './images/menu-left.svg';
 import menuRight from './images/menu-right.svg';
+import circle from './images/circle-medium.svg';
 
 const fleet = document.querySelector('.fleet');
 const attackArea = document.querySelector('.attackArea');
@@ -221,6 +223,15 @@ export const playerVsComp = function () {
   const rightplayStatus = document.querySelector(
     '.scores .rightplayStatus .viewBox'
   );
+  const leftOutcome = document.querySelector(
+    '.videoResponse .matchOutcome .leftOutcome'
+  );
+  const rightOutcome = document.querySelector(
+    '.videoResponse .matchOutcome .rightOutcome'
+  );
+  const leftReport = document.querySelector(
+    '.videoResponse .matchHistory .leftReport'
+  );
   const timer = document.querySelector('.scores .timer .viewBox');
   leftName.textContent = 'P1';
   rightName.textContent = 'AI';
@@ -258,6 +269,31 @@ export const playerVsComp = function () {
     'PATCH_ME',
     'DOWNBAD',
     '404_SKILL',
+  ];
+
+  const humanWinsOutcome = [
+    '🏆 Promoted To Admiral.',
+    "🔥 Unbeatable - AI Couldn't Keep Up",
+    '🧠 Unmatched Intelligence',
+    '☠️ It Was AI After All!',
+  ];
+  const humanLossOutcome = [
+    '🔥 Outclassed!',
+    '🔻 Strategic Retreat (aka Got Smoked)',
+    '🫠 That Was...Embarrassing',
+    '📦 Shipped Back To Port',
+  ];
+  const aiWinsOutcome = [
+    '💡 Algorithmic Dominance!',
+    '🎯 Precision Over Emotion',
+    '🧠 Big CPU Play',
+    '☠️ Human ERROR Detected!',
+  ];
+  const aiLossOutcome = [
+    '💀 System Failure: COOKED',
+    '🥵 Rebooting in Shame...',
+    '📉 AI.exe Has CRASHED',
+    "🤖 You Can't Do This To Me...",
   ];
 
   let bannedCoords = [];
@@ -705,6 +741,16 @@ export const playerVsComp = function () {
           leftplayStatus.textContent = `${humanWins[Math.floor(Math.random() * humanWins.length)]}`;
           rightplayStatus.textContent = `${aiLoss[Math.floor(Math.random() * aiLoss.length)]}`;
           rightplayStatus.classList.add('invalidCoords');
+          leftOutcome.textContent = `${humanWinsOutcome[Math.floor(Math.random() * humanWinsOutcome.length)]}`;
+          rightOutcome.textContent = `${aiLossOutcome[Math.floor(Math.random() * aiLossOutcome.length)]}`;
+          typewriterEffect(
+            `VICTORY ACHIEVED\n` +
+              `Enemy grid cleared. All hostiles neutralized.\n` +
+              `Your fleet stands alone — battered, but unbroken.\n` +
+              `Command honors your resolve.\n` +
+              `End transmission.`,
+            leftReport
+          );
         } else if (result.hit) {
           return;
         } else if (aiMemory.chasing) {
@@ -853,6 +899,16 @@ export const playerVsComp = function () {
       leftplayStatus.textContent = `${humanLoss[Math.floor(Math.random() * humanLoss.length)]}`;
       rightplayStatus.textContent = `${aiWins[Math.floor(Math.random() * aiWins.length)]}`;
       leftplayStatus.classList.add('invalidCoords');
+      leftOutcome.textContent = `${humanLossOutcome[Math.floor(Math.random() * humanLossOutcome.length)]}`;
+      rightOutcome.textContent = `${aiWinsOutcome[Math.floor(Math.random() * aiWinsOutcome.length)]}`;
+      typewriterEffect(
+        `AI RESPONSE: FLEET NEUTRALIZED\n` +
+          `Tactical superiority: confirmed.\n` +
+          `Human error was... predictable.\n` +
+          `Your resistance was noted and erased.\n` +
+          `This ocean now belongs to the machines.`,
+        leftReport
+      );
     } else if (attackItems.result.hit && !attackItems.result.shipSunk) {
       lockAttackGrid();
 
@@ -913,11 +969,11 @@ export const playerVsComp = function () {
     if (result.alreadyTried) return;
 
     if (result.hit) {
-      cell.style.backgroundColor = 'red';
+      cell.innerHTML = `<img class="shipHitRed" src="${circle}">`;
       const hitCount = turn.gameboard.allShipData[result.shipIndex].hits;
       shipHits[result.shipIndex][hitCount - 1].style.backgroundColor = 'red';
     } else {
-      cell.style.backgroundColor = 'aqua';
+      cell.innerHTML = `<img class="shipMissBlue" src="${circle}">`;
     }
 
     if (result.shipSunk) {
@@ -1021,6 +1077,16 @@ export const playerVsComp = function () {
       leftplayStatus.textContent = `${humanLoss[Math.floor(Math.random() * humanLoss.length)]}`;
       rightplayStatus.textContent = `${aiWins[Math.floor(Math.random() * aiWins.length)]}`;
       leftplayStatus.classList.add('invalidCoords');
+      leftOutcome.textContent = `${humanLossOutcome[Math.floor(Math.random() * humanLossOutcome.length)]}`;
+      rightOutcome.textContent = `${aiWinsOutcome[Math.floor(Math.random() * aiWinsOutcome.length)]}`;
+      typewriterEffect(
+        `AI RESPONSE: FLEET NEUTRALIZED\n` +
+          `Tactical superiority: confirmed.\n` +
+          `Human error was... predictable.\n` +
+          `Your resistance was noted and erased.\n` +
+          `This ocean now belongs to the machines.`,
+        leftReport
+      );
       console.log('GAME OVER! AI wins');
     } else if (attackItems.result.shipSunk) {
       markSurroundingAsBanned(
@@ -1067,6 +1133,16 @@ export const playerVsComp = function () {
       leftplayStatus.textContent = `${humanLoss[Math.floor(Math.random() * humanLoss.length)]}`;
       rightplayStatus.textContent = `${aiWins[Math.floor(Math.random() * aiWins.length)]}`;
       leftplayStatus.classList.add('invalidCoords');
+      leftOutcome.textContent = `${humanLossOutcome[Math.floor(Math.random() * humanLossOutcome.length)]}`;
+      rightOutcome.textContent = `${aiWinsOutcome[Math.floor(Math.random() * aiWinsOutcome.length)]}`;
+      typewriterEffect(
+        `AI RESPONSE: FLEET NEUTRALIZED\n` +
+          `Tactical superiority: confirmed.\n` +
+          `Human error was... predictable.\n` +
+          `Your resistance was noted and erased.\n` +
+          `This ocean now belongs to the machines.`,
+        leftReport
+      );
       console.log('GAME OVER! AI wins');
       return;
     }
