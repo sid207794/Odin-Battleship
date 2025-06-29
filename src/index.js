@@ -8,10 +8,39 @@ import {
   scoreboard,
 } from './dom.js';
 
+let currentTyping = false;
+
+export function typewriterEffect(text, element) {
+  if (currentTyping) clearInterval(currentTyping);
+  let index = 0;
+  element.innerHTML = '';
+
+  currentTyping = setInterval(() => {
+    let visibleText = text.slice(0, index);
+    visibleText = visibleText.replace(/\n/g, '<br>');
+    element.innerHTML = visibleText + '_';
+    index++;
+
+    if (index > text.length) {
+      clearInterval(currentTyping);
+      currentTyping = false;
+    }
+  }, 25);
+}
+
 (function gameStartingEventListeners() {
   const aiOption = document.querySelector('.fleetOption .option1 .button1');
   const playerOption = document.querySelector('.fleetOption .option2 .button2');
   const scores = document.querySelector('.playerData .scores');
+  const leftReport = document.querySelector(
+    '.videoResponse .matchHistory .leftReport'
+  );
+  const leftOutcome = document.querySelector(
+    '.videoResponse .matchOutcome .leftOutcome'
+  );
+  const rightOutcome = document.querySelector(
+    '.videoResponse .matchOutcome .rightOutcome'
+  );
   const coordDataWrapper = document.querySelector(
     '.playerData .coordDataWrapper'
   );
@@ -23,13 +52,44 @@ import {
   const playButton = document.querySelector('.forfeit .start');
   const stopButton = document.querySelector('.forfeit .stop');
 
+  aiOption.addEventListener('mouseenter', () => {
+    typewriterEffect(
+      `MODE: SINGLE PLAYER\n` +
+        `Engage an adaptive enemy in strategic naval warfare.\n` +
+        `Deploy your fleet. Scout the unknown. Eliminate threats.\n` +
+        `Your wits are the only thing between victory and a watery grave.`,
+      leftReport
+    );
+  });
+
+  playerOption.addEventListener('mouseenter', () => {
+    typewriterEffect(
+      `MODE: LOCAL MULTIPLAYER\n` +
+        `Two commanders. One battlefield.\n` +
+        `Alternate turns. Place your ships. Outsmart your rival.\n` +
+        `Trust no one. There are no friends at sea.`,
+      leftReport
+    );
+  });
+
   aiOption.addEventListener('click', () => {
     fleetPlacementOptions();
     const randomized = document.querySelector('.fleetOption .option1 .button1');
     const customCoords = document.querySelector(
       '.fleetOption .option2 .button2'
     );
+
     let showFleet;
+
+    randomized.addEventListener('mouseenter', () => {
+      typewriterEffect(
+        `MODE: RANDOMIZED PLACEMENT\n` +
+          `Fleet coordinates scrambled via command protocol.\n` +
+          `Ships deployed instantly across the grid.\n` +
+          `Strategic placement: automated. Let chaos guide your tactics.`,
+        leftReport
+      );
+    });
 
     randomized.addEventListener('click', () => {
       shipStatus.forEach((side) => side.classList.add('visibleWrap'));
@@ -40,6 +100,16 @@ import {
       showFleet = playerVsComp();
       showFleet.showPlayerFleet();
       showFleet.enablePlayerAttack();
+    });
+
+    customCoords.addEventListener('mouseenter', () => {
+      typewriterEffect(
+        `MODE: MANUAL FLEET SETUP\n` +
+          `Awaiting input...\n` +
+          `Position each vessel with surgical precision.\n` +
+          `Victory is forged before the first shot is fired.`,
+        leftReport
+      );
     });
 
     customCoords.addEventListener('click', () => {
@@ -87,6 +157,8 @@ import {
           (child) => (child.style.backgroundColor = 'white')
         )
       );
+      leftOutcome.textContent = '';
+      rightOutcome.textContent = '';
       createGrid();
       attackArea.style.pointerEvents = 'none';
       scoreboard();
