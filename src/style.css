@@ -96,13 +96,13 @@ body {
 }
 
 .coordStatus > div:first-child {
-  border-top-left-radius: 20px;
-  border-bottom-left-radius: 20px;
+  border-top-left-radius: calc(20 * 100vmin / 730);
+  border-bottom-left-radius: calc(20 * 100vmin / 730);
 }
 
 .coordStatus > div:last-child {
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
+  border-top-right-radius: calc(20 * 100vmin / 730);
+  border-bottom-right-radius: calc(20 * 100vmin / 730);
 }
 
 .carrierStatusWrap .coordStatus > div {
@@ -256,8 +256,76 @@ body {
 
 #gameplayZone .videoResponse {
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   height: 20%;
-  background-color: transparent;
+  padding: 0 2vw;
+  background-color: rgb(0, 44, 11);
+}
+
+.videoResponse .matchHistory {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 75%;
+  width: 100%;
+}
+
+.matchHistory .leftReport,
+.matchHistory .rightReport {
+  display: flex;
+  justify-content: left;
+  align-items: end;
+  font-family: 'Press Start 2P', serif;
+  font-size: 1.25vmin;
+  text-shadow:
+    0 0 10px lime,
+    0 0 10px lime;
+  color: lime;
+  line-height: 1.6;
+  height: 75%;
+}
+
+.matchHistory .rightReport {
+  justify-content: right;
+}
+
+.cursor {
+  animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.videoResponse .matchOutcome {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 25%;
+  width: 100%;
+  border-top: dashed calc(2 * 10vh / 730) lime;
+}
+
+.matchOutcome .leftOutcome,
+.matchOutcome .rightOutcome {
+  display: flex;
+  justify-content: left;
+  align-items: end;
+  font-family: 'Press Start 2P', serif;
+  font-size: 1.25vmin;
+  text-shadow:
+    0 0 10px lime,
+    0 0 10px lime;
+  color: lime;
+  line-height: 1.6;
+}
+
+.matchOutcome .rightOutcome {
+  justify-content: right;
 }
 
 #gameplayZone .playerData {
@@ -542,7 +610,10 @@ body {
 
 .fleetCell,
 .attackCell {
-  border: solid calc(1 * 100vmin / 730) white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: solid calc(1 * 100vmin / 730) #ffffff75;
   background-color: rgb(0, 140, 255);
   box-sizing: border-box;
   cursor: pointer;
@@ -620,4 +691,13 @@ body {
   background-color: rgb(101, 98, 98);
   color: white;
   border-color: grey;
+}
+
+.shipHitRed {
+  filter: invert(20%) sepia(100%) saturate(5000%) hue-rotate(0deg)
+    brightness(150%) contrast(100%) drop-shadow(2px 2px 2px black) !important;
+}
+
+.shipMissBlue {
+  filter: invert(100%) drop-shadow(2px 2px 2px black) !important;
 }
