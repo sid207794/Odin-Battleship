@@ -1,0 +1,694 @@
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-image: url(../fb09be27d8eb715bbbdf.jpg);
+  background-size: cover;
+  background-position: center;
+  user-select: none;
+}
+
+#gameScreen {
+  display: grid;
+  grid-template: 1fr 12fr / 2fr 5fr 2fr;
+  height: 100vh;
+}
+
+#gameScreen header {
+  grid-row: 1 / 2;
+  grid-column: 1 / 4;
+  background-color: #d6dde2;
+}
+
+#gameScreen #leftSidebar {
+  display: flex;
+  grid-row: 2 / 3;
+  grid-column: 1 / 2;
+}
+
+#leftSidebar .leftPanel {
+  height: 100%;
+  width: 100%;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - (calc(70 * 100vh / 730))),
+    calc(100% - (calc(40 * 100vw / 1536))) 100%,
+    0 100%
+  );
+  background-color: #96aab6;
+  padding: 4vmin;
+  box-sizing: border-box;
+}
+
+.leftPanel .shipStatus {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 3vh;
+  visibility: hidden;
+}
+
+.carrierStatusWrap,
+.battleshipStatusWrap,
+.cruiserStatusWrap,
+.submarineStatusWrap,
+.destroyerStatusWrap {
+  display: flex;
+  gap: 1vw;
+}
+
+.leftPanel .carrierStatus,
+.leftPanel .battleshipStatus,
+.leftPanel .cruiserStatus,
+.leftPanel .submarineStatus,
+.leftPanel .destroyerStatus {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 9vh;
+  width: 10vw;
+  background-image: url(../0db3633d97ec4be5d9da.jpg);
+  background-size: cover;
+  border-radius: calc(10 * 100vmin / 730);
+  box-sizing: border-box;
+  box-shadow:
+    inset 2px 2px 10px black,
+    inset -2px -2px 10px black;
+  gap: 1vw;
+}
+
+.coordStatus {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: calc(100 * 100vw / 1536);
+}
+
+.coordStatus > div {
+  height: 1vh;
+  width: 1.5vh;
+  background-color: white;
+  box-shadow:
+    inset 0 1px 0 black,
+    inset 0 -1px 0 black;
+}
+
+.coordStatus > div:first-child {
+  border-top-left-radius: calc(20 * 100vmin / 730);
+  border-bottom-left-radius: calc(20 * 100vmin / 730);
+}
+
+.coordStatus > div:last-child {
+  border-top-right-radius: calc(20 * 100vmin / 730);
+  border-bottom-right-radius: calc(20 * 100vmin / 730);
+}
+
+.carrierStatusWrap .coordStatus > div {
+  width: calc(20 * 100vw / 1536);
+}
+
+.battleshipStatusWrap .coordStatus > div {
+  width: calc(25 * 100vw / 1536);
+}
+
+.cruiserStatusWrap .coordStatus > div {
+  width: calc((100 / 3) * 100vw / 1536);
+}
+
+.submarineStatusWrap .coordStatus > div {
+  width: calc((100 / 3) * 100vw / 1536);
+}
+
+.destroyerStatusWrap .coordStatus > div {
+  width: calc(50 * 100vw / 1536);
+}
+
+.leftPanel .carrierStatus img,
+.leftPanel .battleshipStatus img,
+.leftPanel .cruiserStatus img,
+.leftPanel .submarineStatus img,
+.leftPanel .destroyerStatus img {
+  height: 6vh;
+  width: 7vw;
+  border-radius: calc(10 * 100vmin / 730);
+  filter: brightness(0) saturate(100%) invert(83%) sepia(100%) hue-rotate(70deg)
+    saturate(2900%) brightness(125%);
+}
+
+.leftPanel .actionStatus {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 15vh;
+  flex: 1;
+}
+
+.leftPanel .forfeit {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 10vh;
+}
+
+.forfeit .start,
+.forfeit .stop {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 6vh;
+  width: 18vh;
+  border: inset calc(3 * 100vmin / 730) maroon;
+  border-radius: calc(6 * 100vmin / 730);
+  background-color: red;
+  box-sizing: border-box;
+  font-family: 'Press Start 2P', serif;
+  font-weight: bold;
+  font-size: 2vmin;
+  color: white;
+  cursor: pointer;
+  pointer-events: none;
+  position: absolute;
+  visibility: hidden;
+}
+
+.forfeit .start:active,
+.forfeit .stop:active {
+  border: outset calc(3 * 100vmin / 730) maroon;
+}
+
+.forfeit .start:hover,
+.forfeit .stop:hover {
+  color: white !important;
+  text-shadow: 0 0 10px white;
+}
+
+#gameScreen #rightSidebar {
+  display: flex;
+  grid-row: 2 / 3;
+  grid-column: 3 / 4;
+}
+
+#rightSidebar .rightPanel {
+  height: 100%;
+  width: 100%;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 100%,
+    calc(40 * 100vw / 1536) 100%,
+    0 calc(100% - (calc(70 * 100vh / 730)))
+  );
+  background-color: #585c62;
+  padding: 4vmin;
+  box-sizing: border-box;
+}
+
+.rightPanel .shipStatus {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 3vh;
+  visibility: hidden;
+}
+
+.rightPanel .carrierStatus,
+.rightPanel .battleshipStatus,
+.rightPanel .cruiserStatus,
+.rightPanel .submarineStatus,
+.rightPanel .destroyerStatus {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 9vh;
+  width: 10vw;
+  background-color: #585c62;
+  border: inset calc(3 * 100vmin / 730);
+  border-radius: calc(10 * 100vmin / 730);
+  box-shadow:
+    inset 2px 2px 15px black,
+    inset -2px -2px 15px black;
+  box-sizing: border-box;
+}
+
+.rightPanel .carrierStatus img,
+.rightPanel .battleshipStatus img,
+.rightPanel .cruiserStatus img,
+.rightPanel .submarineStatus img,
+.rightPanel .destroyerStatus img {
+  height: 6vh;
+  width: 7vw;
+  border-radius: calc(10 * 100vmin / 730);
+  filter: invert(80%);
+}
+
+#gameScreen #gameplayZone {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  grid-row: 2 / 3;
+  grid-column: 2 / 3;
+}
+
+#gameplayZone .videoResponse {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 20%;
+  padding: 0 2vw;
+  background-color: rgb(0, 44, 11);
+}
+
+.videoResponse .matchHistory {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 75%;
+  width: 100%;
+}
+
+.matchHistory .leftReport,
+.matchHistory .rightReport {
+  display: flex;
+  justify-content: left;
+  align-items: end;
+  font-family: 'Press Start 2P', serif;
+  font-size: 1.25vmin;
+  text-shadow:
+    0 0 10px lime,
+    0 0 10px lime;
+  color: lime;
+  line-height: 1.6;
+  height: 75%;
+}
+
+.matchHistory .rightReport {
+  justify-content: right;
+}
+
+.videoResponse .matchOutcome {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 25%;
+  width: 100%;
+  border-top: dashed calc(2 * 10vh / 730) lime;
+}
+
+.matchOutcome .leftOutcome,
+.matchOutcome .rightOutcome {
+  display: flex;
+  justify-content: left;
+  align-items: end;
+  font-family: 'Press Start 2P', serif;
+  font-size: 1.25vmin;
+  text-shadow:
+    0 0 10px lime,
+    0 0 10px lime;
+  color: lime;
+  line-height: 1.6;
+}
+
+.matchOutcome .rightOutcome {
+  justify-content: right;
+}
+
+#gameplayZone .playerData {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 10%;
+  background-color: #252525;
+  border-top: outset calc(3 * 100vmin / 730);
+  border-bottom: outset calc(3 * 100vmin / 730);
+  border-color: grey;
+  box-sizing: border-box;
+}
+
+.playerData > div {
+  visibility: hidden;
+}
+
+.playerData .coordDataWrapper,
+.playerData .scores {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75vw;
+  padding: 0 0.25vw;
+  position: absolute;
+}
+
+.coordDataWrapper .shipSelect,
+.coordDataWrapper .startCoord,
+.coordDataWrapper .orientation,
+.coordDataWrapper .endCoord,
+.coordDataWrapper .clearOrConfirm,
+.scores .leftName,
+.scores .leftplayStatus,
+.scores .timer,
+.scores .rightplayStatus,
+.scores .rightName {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: solid calc(2 * 100vmin / 730) silver;
+  border-radius: calc(10 * 100vmin / 730);
+  box-sizing: border-box;
+  height: 7vh;
+  width: 11.75vw;
+  gap: 0.25vw;
+  padding: 0.25vmin;
+}
+
+.view {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.coordDataWrapper .startCoord {
+  width: 13.75vw;
+  gap: 1vw;
+}
+
+.coordDataWrapper .clearOrConfirm {
+  width: 12vh;
+}
+
+.playerData .viewBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 4vh;
+  background-color: black;
+  border-radius: calc(5 * 100vmin / 730);
+  font-family: 'Press Start 2P', serif;
+  font-size: 1vmin;
+  font-weight: bold;
+  text-shadow:
+    0 0 10px lime,
+    0 0 10px lime;
+  color: lime;
+}
+
+.scores .leftName .viewBox,
+.scores .rightName .viewBox {
+  font-size: 1.15vmin;
+  width: 5vh;
+}
+
+.scores .leftplayStatus .viewBox,
+.scores .rightplayStatus .viewBox {
+  font-size: 1.15vmin;
+  width: 16vh;
+}
+
+.scores .timer .viewBox {
+  font-size: 1.35vmin;
+  width: 15vh;
+  text-shadow:
+    0 0 10px white,
+    0 0 5px white;
+  color: white;
+}
+
+.coordDataWrapper .shipSelect .viewBox {
+  width: 7vw;
+}
+
+.startCoord .xOrdinate,
+.startCoord .yOrdinate {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25vw;
+  height: 5vh;
+  width: 5.75vw;
+  border-radius: calc(10 * 100vmin / 730);
+}
+
+.coordDataWrapper .xOrdinate .viewBox {
+  width: 4vh;
+}
+
+.coordDataWrapper .yOrdinate .viewBox {
+  width: 4vh;
+}
+
+.coordDataWrapper .orientation .viewBox {
+  width: 7vw;
+}
+
+.coordDataWrapper .endCoord,
+.scores .leftName,
+.scores .rightName {
+  width: 10vh;
+}
+
+.endCoord .viewBox {
+  width: 8vh;
+}
+
+.endCoord .invalidCoords,
+.scores .invalidCoords {
+  text-shadow:
+    0 0 10px red,
+    0 0 10px red;
+  color: red;
+}
+
+.coordDataWrapper .clearOrConfirm button {
+  height: 4vh;
+  width: 10vh;
+  border: inset calc(2 * 100vmin / 730) maroon;
+  border-radius: calc(5 * 100vmin / 730);
+  background-color: red;
+  box-sizing: border-box;
+  font-family: 'Press Start 2P', serif;
+  font-weight: bold;
+  font-size: 1.05vmin;
+  color: white;
+  cursor: pointer;
+  pointer-events: none;
+}
+
+.coordDataWrapper .clearOrConfirm button:active {
+  border: outset calc(2 * 100vmin / 730) green;
+}
+
+.coordDataWrapper .clearOrConfirm button:hover {
+  color: white !important;
+  text-shadow: 0 0 10px white;
+}
+
+.coordDataWrapper .leftScroll,
+.coordDataWrapper .rightScroll {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 3vh;
+  width: 3vh;
+}
+
+.coordDataWrapper .leftScroll button,
+.coordDataWrapper .rightScroll button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 3vh;
+  width: 3vh;
+  border: inset calc(2 * 100vmin / 730) white;
+  border-radius: calc(5 * 100vmin / 730);
+  background-color: black;
+  cursor: pointer;
+}
+
+.coordDataWrapper .leftScroll button:active,
+.coordDataWrapper .rightScroll button:active {
+  border: outset calc(2 * 100vmin / 730) white;
+}
+
+.coordDataWrapper .leftScroll button img,
+.coordDataWrapper .rightScroll button img {
+  height: 3vh;
+  width: 3vh;
+  filter: brightness(0) saturate(100%) invert(83%) sepia(100%) hue-rotate(70deg)
+    saturate(2900%) brightness(125%);
+}
+
+.coordDataWrapper .leftScroll button:active img,
+.coordDataWrapper .rightScroll button:active img {
+  filter: invert(100%);
+}
+
+.visibleWrap {
+  visibility: visible !important;
+}
+
+#gameplaZone .playzoneWrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 70%;
+}
+
+.playzoneWrap .playzone,
+.playzoneWrap .xScale,
+.yScale {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.playzoneWrap .xScale {
+  height: 5vh;
+  gap: 2vw;
+}
+
+.fleetScale,
+.attackScale {
+  display: grid;
+  grid-template: repeat(1, 1fr) / repeat(10, 1fr);
+  border: none;
+  height: 2vw;
+  width: 25vw;
+}
+
+.fleetScaleCell,
+.attackScaleCell,
+.yScaleCell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  background-color: transparent;
+  box-sizing: border-box;
+  z-index: 9997;
+  font-family: 'Press Start 2P', serif;
+  color: white;
+  font-size: 1.25vmin;
+}
+
+.yScale .midScale {
+  display: grid;
+  grid-template: repeat(10, 1fr) / repeat(1, 1fr);
+  border: none;
+}
+
+.playzone .fleet,
+.playzone .attackArea {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fleetGrid,
+.attackGrid {
+  display: grid;
+  grid-template: repeat(10, 1fr) / repeat(10, 1fr);
+  height: 25vw;
+  width: 25vw;
+  border: none;
+}
+
+.fleetCell,
+.attackCell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: solid calc(1 * 100vmin / 730) #ffffff75;
+  background-color: rgb(0, 140, 255);
+  box-sizing: border-box;
+  cursor: pointer;
+  z-index: 9997;
+}
+
+.fleetCell {
+  cursor: default;
+}
+
+.attackCell:hover {
+  filter: brightness(75%);
+}
+
+.sunkRight {
+  border-color: red !important;
+  background-color: red !important;
+}
+
+.sunkRightImg {
+  filter: invert(10%) !important;
+}
+
+.sunkLeft {
+  background-image: url(../9b307ad66336047bc06a.jpg) !important;
+}
+
+.sunkLeftImg {
+  filter: invert(20%) sepia(100%) saturate(5000%) hue-rotate(0deg)
+    brightness(150%) contrast(100%) drop-shadow(0 0 3px black) !important;
+}
+
+.fleetOption {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5vh;
+}
+
+.optionText {
+  font-family: 'Press Start 2P', serif;
+  font-weight: bold;
+  color: white;
+  font-size: 3vmin;
+}
+
+.fleetOption .options {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3vh;
+}
+
+.fleetOption .options > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fleetOption .options > div > button {
+  height: 6vh;
+  width: 45vh;
+  background-color: silver;
+  border: outset calc(3 * 100vmin / 730);
+  box-sizing: border-box;
+  font-family: 'Press Start 2P', serif;
+  color: black;
+  font-size: 2vmin;
+  cursor: pointer;
+}
+
+.fleetOption .options > div > button:hover {
+  background-color: rgb(101, 98, 98);
+  color: white;
+  border-color: grey;
+}
+
+.shipHitRed {
+  filter: invert(20%) sepia(100%) saturate(5000%) hue-rotate(0deg)
+    brightness(150%) contrast(100%) drop-shadow(2px 2px 2px black) !important;
+}
+
+.shipMissBlue {
+  filter: invert(100%) drop-shadow(2px 2px 2px black) !important;
+}
+
