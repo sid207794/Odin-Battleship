@@ -291,16 +291,6 @@ body {
   justify-content: right;
 }
 
-.cursor {
-  animation: blink 1s step-start infinite;
-}
-
-@keyframes blink {
-  50% {
-    opacity: 0;
-  }
-}
-
 .videoResponse .matchOutcome {
   display: flex;
   justify-content: space-between;
