@@ -63,11 +63,16 @@ export function typewriterEffect(text, element) {
   });
 
   playerOption.addEventListener('mouseenter', () => {
+    // typewriterEffect(
+    //   `MODE: LOCAL MULTIPLAYER\n` +
+    //     `Two commanders. One battlefield.\n` +
+    //     `Alternate turns. Place your ships. Outsmart your rival.\n` +
+    //     `Trust no one. There are no friends at sea.`,
+    //   leftReport
+    // );
     typewriterEffect(
-      `MODE: LOCAL MULTIPLAYER\n` +
-        `Two commanders. One battlefield.\n` +
-        `Alternate turns. Place your ships. Outsmart your rival.\n` +
-        `Trust no one. There are no friends at sea.`,
+      `COMING SOON\n
+      STAY TUNED!`,
       leftReport
     );
   });
@@ -100,6 +105,49 @@ export function typewriterEffect(text, element) {
       showFleet = playerVsComp();
       showFleet.showPlayerFleet();
       showFleet.enablePlayerAttack();
+      playButton.style.pointerEvents = 'none';
+      stopButton.style.pointerEvents = 'auto';
+      stopButton.classList.add('visibleWrap');
+
+      let hasForfeit = false;
+      stopButton.addEventListener('click', () => {
+        if (!hasForfeit) {
+          showFleet.lockAttackGrid();
+          showFleet.aiWinsDisplay();
+          stopButton.textContent = 'RETRY';
+          hasForfeit = true;
+        } else {
+          hasForfeit = false;
+          typewriterEffect(
+            `MODE: RANDOMIZED PLACEMENT\n` +
+              `Fleet coordinates scrambled via command protocol.\n` +
+              `Ships deployed instantly across the grid.\n` +
+              `Strategic placement: automated. Let chaos guide your tactics.`,
+            leftReport
+          );
+          stopButton.textContent = 'FORFEIT';
+          shipWrapsLeft.forEach((shipWrap) => {
+            shipWrap.children[1].classList.remove('sunkLeft');
+            shipWrap.children[1].children[0].classList.remove('sunkLeftImg');
+          });
+          shipWrapsRight.forEach((shipWrap) => {
+            shipWrap.children[0].classList.remove('sunkRight');
+            shipWrap.children[0].children[0].classList.remove('sunkRightImg');
+          });
+          coordStatus.forEach((shipHealth) =>
+            Array.from(shipHealth.children).forEach(
+              (child) => (child.style.backgroundColor = 'white')
+            )
+          );
+          leftOutcome.textContent = '';
+          rightOutcome.textContent = '';
+          createGrid();
+          scoreboard();
+          showFleet = playerVsComp();
+          showFleet.showPlayerFleet();
+          showFleet.enablePlayerAttack();
+        }
+      });
     });
 
     customCoords.addEventListener('mouseenter', () => {
@@ -121,54 +169,71 @@ export function typewriterEffect(text, element) {
       scoreboard();
       showFleet = playerVsComp();
       showFleet.customPlayerFleet();
-    });
 
-    playButton.addEventListener('click', () => {
-      playButton.style.pointerEvents = 'none';
-      coordDataWrapper.classList.remove('visibleWrap');
-      scores.classList.add('visibleWrap');
-      playButton.classList.remove('visibleWrap');
-      stopButton.classList.add('visibleWrap');
-      stopButton.style.pointerEvents = 'auto';
-      attackArea.style.pointerEvents = 'auto';
-      showFleet.whiteWashShipCell();
-      showFleet.enablePlayerAttack();
-    });
+      playButton.addEventListener('click', () => {
+        playButton.style.pointerEvents = 'none';
+        coordDataWrapper.classList.remove('visibleWrap');
+        scores.classList.add('visibleWrap');
+        playButton.classList.remove('visibleWrap');
+        stopButton.classList.add('visibleWrap');
+        stopButton.style.pointerEvents = 'auto';
+        attackArea.style.pointerEvents = 'auto';
+        showFleet.whiteWashShipCell();
+        showFleet.enablePlayerAttack();
+      });
 
-    stopButton.addEventListener('click', () => {
-      stopButton.style.pointerEvents = 'none';
-      coordDataWrapper.classList.add('visibleWrap');
-      scores.classList.remove('visibleWrap');
-      stopButton.classList.remove('visibleWrap');
-      playButton.classList.add('visibleWrap');
-      playButton.style.backgroundColor = 'red';
-      playButton.style.color = 'white';
-      playButton.style.borderColor = 'maroon';
-      shipWrapsLeft.forEach((shipWrap) => {
-        shipWrap.children[1].classList.remove('sunkLeft');
-        shipWrap.children[1].children[0].classList.remove('sunkLeftImg');
+      let hasForfeit = false;
+      stopButton.addEventListener('click', () => {
+        if (!hasForfeit) {
+          showFleet.lockAttackGrid();
+          showFleet.aiWinsDisplay();
+          stopButton.textContent = 'RETRY';
+          hasForfeit = true;
+        } else {
+          hasForfeit = false;
+          typewriterEffect(
+            `MODE: MANUAL FLEET SETUP\n` +
+              `Awaiting input...\n` +
+              `Position each vessel with surgical precision.\n` +
+              `Victory is forged before the first shot is fired.`,
+            leftReport
+          );
+          stopButton.textContent = 'FORFEIT';
+          stopButton.style.pointerEvents = 'none';
+          coordDataWrapper.classList.add('visibleWrap');
+          scores.classList.remove('visibleWrap');
+          stopButton.classList.remove('visibleWrap');
+          playButton.classList.add('visibleWrap');
+          playButton.style.backgroundColor = 'red';
+          playButton.style.color = 'white';
+          playButton.style.borderColor = 'maroon';
+          shipWrapsLeft.forEach((shipWrap) => {
+            shipWrap.children[1].classList.remove('sunkLeft');
+            shipWrap.children[1].children[0].classList.remove('sunkLeftImg');
+          });
+          shipWrapsRight.forEach((shipWrap) => {
+            shipWrap.children[0].classList.remove('sunkRight');
+            shipWrap.children[0].children[0].classList.remove('sunkRightImg');
+          });
+          coordStatus.forEach((shipHealth) =>
+            Array.from(shipHealth.children).forEach(
+              (child) => (child.style.backgroundColor = 'white')
+            )
+          );
+          leftOutcome.textContent = '';
+          rightOutcome.textContent = '';
+          createGrid();
+          attackArea.style.pointerEvents = 'none';
+          scoreboard();
+          showFleet = playerVsComp();
+          showFleet.resetShipData();
+          showFleet.customPlayerFleet();
+        }
       });
-      shipWrapsRight.forEach((shipWrap) => {
-        shipWrap.children[0].classList.remove('sunkRight');
-        shipWrap.children[0].children[0].classList.remove('sunkRightImg');
-      });
-      coordStatus.forEach((shipHealth) =>
-        Array.from(shipHealth.children).forEach(
-          (child) => (child.style.backgroundColor = 'white')
-        )
-      );
-      leftOutcome.textContent = '';
-      rightOutcome.textContent = '';
-      createGrid();
-      attackArea.style.pointerEvents = 'none';
-      scoreboard();
-      showFleet = playerVsComp();
-      showFleet.resetShipData();
-      showFleet.customPlayerFleet();
     });
   });
 
   playerOption.addEventListener('click', () => {
-    fleetPlacementOptions();
+    // fleetPlacementOptions();
   });
 })();
