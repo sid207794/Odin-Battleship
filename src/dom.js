@@ -895,20 +895,7 @@ export const playerVsComp = function () {
     if (player.gameboard.isGameOver()) {
       console.log('GAME OVER!');
       lockAttackGrid();
-      timer.textContent = 'GAME OVER';
-      leftplayStatus.textContent = `${humanLoss[Math.floor(Math.random() * humanLoss.length)]}`;
-      rightplayStatus.textContent = `${aiWins[Math.floor(Math.random() * aiWins.length)]}`;
-      leftplayStatus.classList.add('invalidCoords');
-      leftOutcome.textContent = `${humanLossOutcome[Math.floor(Math.random() * humanLossOutcome.length)]}`;
-      rightOutcome.textContent = `${aiWinsOutcome[Math.floor(Math.random() * aiWinsOutcome.length)]}`;
-      typewriterEffect(
-        `AI RESPONSE: FLEET NEUTRALIZED\n` +
-          `Tactical superiority: confirmed.\n` +
-          `Human error was... predictable.\n` +
-          `Your resistance was noted and erased.\n` +
-          `This ocean now belongs to the machines.`,
-        leftReport
-      );
+      aiWinsDisplay();
     } else if (attackItems.result.hit && !attackItems.result.shipSunk) {
       lockAttackGrid();
 
@@ -1073,20 +1060,7 @@ export const playerVsComp = function () {
       setTimeout(() => findPlayerShipOnHit(), 500);
     } else if (player.gameboard.isGameOver()) {
       lockAttackGrid();
-      timer.textContent = 'GAME OVER';
-      leftplayStatus.textContent = `${humanLoss[Math.floor(Math.random() * humanLoss.length)]}`;
-      rightplayStatus.textContent = `${aiWins[Math.floor(Math.random() * aiWins.length)]}`;
-      leftplayStatus.classList.add('invalidCoords');
-      leftOutcome.textContent = `${humanLossOutcome[Math.floor(Math.random() * humanLossOutcome.length)]}`;
-      rightOutcome.textContent = `${aiWinsOutcome[Math.floor(Math.random() * aiWinsOutcome.length)]}`;
-      typewriterEffect(
-        `AI RESPONSE: FLEET NEUTRALIZED\n` +
-          `Tactical superiority: confirmed.\n` +
-          `Human error was... predictable.\n` +
-          `Your resistance was noted and erased.\n` +
-          `This ocean now belongs to the machines.`,
-        leftReport
-      );
+      aiWinsDisplay();
       console.log('GAME OVER! AI wins');
     } else if (attackItems.result.shipSunk) {
       markSurroundingAsBanned(
@@ -1129,20 +1103,7 @@ export const playerVsComp = function () {
 
     if (player.gameboard.isGameOver()) {
       lockAttackGrid();
-      timer.textContent = 'GAME OVER';
-      leftplayStatus.textContent = `${humanLoss[Math.floor(Math.random() * humanLoss.length)]}`;
-      rightplayStatus.textContent = `${aiWins[Math.floor(Math.random() * aiWins.length)]}`;
-      leftplayStatus.classList.add('invalidCoords');
-      leftOutcome.textContent = `${humanLossOutcome[Math.floor(Math.random() * humanLossOutcome.length)]}`;
-      rightOutcome.textContent = `${aiWinsOutcome[Math.floor(Math.random() * aiWinsOutcome.length)]}`;
-      typewriterEffect(
-        `AI RESPONSE: FLEET NEUTRALIZED\n` +
-          `Tactical superiority: confirmed.\n` +
-          `Human error was... predictable.\n` +
-          `Your resistance was noted and erased.\n` +
-          `This ocean now belongs to the machines.`,
-        leftReport
-      );
+      aiWinsDisplay();
       console.log('GAME OVER! AI wins');
       return;
     }
@@ -1204,12 +1165,31 @@ export const playerVsComp = function () {
     }
   }
 
+  function aiWinsDisplay() {
+    timer.textContent = 'GAME OVER';
+    leftplayStatus.textContent = `${humanLoss[Math.floor(Math.random() * humanLoss.length)]}`;
+    rightplayStatus.textContent = `${aiWins[Math.floor(Math.random() * aiWins.length)]}`;
+    leftplayStatus.classList.add('invalidCoords');
+    leftOutcome.textContent = `${humanLossOutcome[Math.floor(Math.random() * humanLossOutcome.length)]}`;
+    rightOutcome.textContent = `${aiWinsOutcome[Math.floor(Math.random() * aiWinsOutcome.length)]}`;
+    typewriterEffect(
+      `AI RESPONSE: FLEET NEUTRALIZED\n` +
+        `Tactical superiority: confirmed.\n` +
+        `Human error was... predictable.\n` +
+        `Your resistance was noted and erased.\n` +
+        `This ocean now belongs to the machines.`,
+      leftReport
+    );
+  }
+
   return {
     showPlayerFleet,
     customPlayerFleet,
     enablePlayerAttack,
     resetShipData,
     whiteWashShipCell,
+    aiWinsDisplay,
+    lockAttackGrid,
   };
 };
 
