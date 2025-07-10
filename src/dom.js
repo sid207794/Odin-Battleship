@@ -13,6 +13,7 @@ const coordDataWrapper = document.querySelector(
   '.playerData .coordDataWrapper'
 );
 const scores = document.querySelector('.playerData .scores');
+const stopButton = document.querySelector('.forfeit .stop');
 
 export const gameModeSelect = (function () {
   fleet.replaceChildren();
@@ -751,6 +752,7 @@ export const playerVsComp = function () {
               `End transmission.`,
             leftReport
           );
+          stopButton.textContent = 'RESTART';
         } else if (result.hit) {
           return;
         } else if (aiMemory.chasing) {
@@ -1180,6 +1182,11 @@ export const playerVsComp = function () {
         `This ocean now belongs to the machines.`,
       leftReport
     );
+    stopButton.textContent = 'RESTART';
+  }
+
+  function gameOver() {
+    return player.gameboard.isGameOver() || computer.gameboard.isGameOver();
   }
 
   return {
@@ -1190,6 +1197,7 @@ export const playerVsComp = function () {
     whiteWashShipCell,
     aiWinsDisplay,
     lockAttackGrid,
+    gameOver,
   };
 };
 
