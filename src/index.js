@@ -111,6 +111,10 @@ export function typewriterEffect(text, element) {
 
       let hasForfeit = false;
       stopButton.addEventListener('click', () => {
+        if (showFleet.gameOver()) {
+          hasForfeit = true;
+        }
+
         if (!hasForfeit) {
           showFleet.lockAttackGrid();
           showFleet.aiWinsDisplay();
@@ -184,6 +188,10 @@ export function typewriterEffect(text, element) {
 
       let hasForfeit = false;
       stopButton.addEventListener('click', () => {
+        if (showFleet.gameOver()) {
+          hasForfeit = true;
+        }
+
         if (!hasForfeit) {
           showFleet.lockAttackGrid();
           showFleet.aiWinsDisplay();
